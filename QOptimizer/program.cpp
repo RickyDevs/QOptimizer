@@ -138,6 +138,7 @@ void Program::processOptions(const QCommandLineParser& parser, const QList<QComm
 		UNSAFE_MODE = true;
 		std::cout << "Using unsafe mode" << std::endl;
 	}
+	auto self = this;
 
 	QList<CommandRun> commandRuns = {
 		{
@@ -167,9 +168,8 @@ void Program::processOptions(const QCommandLineParser& parser, const QList<QComm
 		},
 		{
 			CommandLineOption::Config,
-			[&parser]() {
-				//std::cout << parser.value("config").toStdString() << std::endl;
-				ConfigOps::processConfigFile(parser.value("config"));
+			[&parser, self]() {
+				ConfigOps::processConfigFile(parser.value("config"), self);
 			},
 			"Config file applied"
 		}

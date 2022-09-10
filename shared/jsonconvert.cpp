@@ -1,11 +1,5 @@
 #include "jsonconvert.h"
 
-//#include <QJsonDocument>
-//#include <QJsonArray>
-//#include <QJsonValue>
-//#include <QJsonObject>
-//#include <QJsonParseError>
-//#include <QByteArray>
 #include <QVariant>
 
 #include "errorlogger.h"
@@ -27,24 +21,11 @@ QVariant toQVariant(const Hjson::Value& value) {
 	return QVariant();
 }
 
+
+
+
 bool JsonConvert::deserializeQObject(const QString& json, QObject* target)
 {
-//	QJsonParseError parseError;
-//	QJsonDocument jsonDoc = QJsonDocument::fromJson(json.toLocal8Bit(), &parseError);
-//	if (parseError.error != QJsonParseError::NoError ) {
-//		LOG_ERROR("Parse error: " + parseError.errorString());
-//		return false;
-//	}
-
-//	QJsonObject obj = jsonDoc.object();
-
-//	for (const QString& key : obj.keys()) {
-//		if (!target->setProperty(key.toLocal8Bit().data(), obj.value(key).toVariant())) {
-//			LOG_ERROR("Parse error: unknown property " + key);
-//			//return false;
-//		}
-//	}
-
 	try {
 		Hjson::Value jsonRoot = Hjson::Unmarshal(json.toStdString());
 
@@ -54,9 +35,33 @@ bool JsonConvert::deserializeQObject(const QString& json, QObject* target)
 		}
 
 		for (const auto& jsonNode : jsonRoot) {
-
 			if (!target->setProperty(jsonNode.first.c_str(), toQVariant(jsonNode.second))) {
 				LOG_ERROR(QString("Parse error: Unknown field '%1'").arg(jsonNode.first.c_str()));
+			}
+		}
+	} catch (std::exception e) {
+		LOG_ERROR(QString("Parse error: %1").arg(e.what()));
+	}
+	return true;
+}
+
+
+
+bool JsonConvert::deserializeQVector(const QString& json, QVector<QObject*>* vector, std::function<QObject*()> objCreator) {
+	try {
+		Hjson::Value jsonRoot = Hjson::Unmarshal(json.toStdString());
+
+		if (jsonRoot.type() != Hjson::Type::Vector) {
+			LOG_ERROR("Parse error: Invalid root element");
+			return false;
+		}
+		for (size_t i = 0; i < jsonRoot.size(); i++) {
+			QObject* target = objCreator();
+			vector->push_back(target);
+			for (const auto& jsonNode : jsonRoot[(int)i]) {
+				if (!target->setProperty(jsonNode.first.c_str(), toQVariant(jsonNode.second))) {
+					LOG_ERROR(QString("Parse error: Unknown field '%1'").arg(jsonNode.first.c_str()));
+				}
 			}
 		}
 
