@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/registry.cpp \
     $$PWD/qtglobalmutex.cpp \
     $$PWD/errorlogger.cpp \
+    $$PWD/cleanhelper.cpp \
     $$PWD/config.cpp \
     $$PWD/configops.cpp \
     $$PWD/jsonconvert.cpp
@@ -20,6 +21,7 @@ HEADERS += \
     $$PWD/registry.h \
     $$PWD/qtglobalmutex.h \
     $$PWD/errorlogger.h \
+    $$PWD/cleanhelper.h \
     $$PWD/config.h \
     $$PWD/configops.h \
     $$PWD/jsonconvert.h

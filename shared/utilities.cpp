@@ -460,11 +460,13 @@ void Utilities::runCommand(const QString& command)
 
 void Utilities::findFile(const QString& fileName)
 		{
+	Q_UNUSED(fileName)
 			//if (File.Exists(fileName)) Process.Start("explorer.exe", $"/select, \"{fileName}\"");
 		}
 
 void Utilities::findFolder(const QString& folder)
 		{
+	Q_UNUSED(folder)
 			//if (Directory.Exists(folder)) RunCommand($"explorer.exe \"{folder}\"");
 		}
 

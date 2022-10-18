@@ -10,7 +10,7 @@ void ErrorLogger::logError(const QString& functionName, const QString& errorMess
 #ifdef QO_CONSOLE
 	std::cerr << "ERROR: " << errorMessage.toStdString() << " at " << functionName.toStdString() << std::endl;
 #else
-#error No log implementaion
+//#error No log implementaion
 #endif
 
 }
