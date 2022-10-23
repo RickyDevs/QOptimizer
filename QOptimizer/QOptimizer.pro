@@ -1,21 +1,30 @@
-QT += qml quick
+QT += qml quick axcontainer
 QT -= widgets svg d3d
 
-CONFIG += c++11
+CONFIG += c++11 qmltypes
+
+LIBS += -lwbemuuid
+
+QML_IMPORT_NAME = io.qoptimizer.backend
+QML_IMPORT_MAJOR_VERSION = 1
 
 include(../shared/shared.pri)
 
 HEADERS += \
-    program.h
+    program.h \
+    mainmodel.h
 
 SOURCES += main.cpp \
-    program.cpp
+    program.cpp \
+    mainmodel.cpp
 
 RESOURCES += qml.qrc
 
 OTHER_FILES += \
     qml/main.qml \
-    qml/Page1.qml
+qml/Page1.qml \
+qml/controls/ToggleButton.qml \
+qml/js/models.js
 
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -28,7 +37,7 @@ QML_DESIGNER_IMPORT_PATH =
 # any feature of Qt which as been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DEPRECATED_WARNINGS QO_GUI
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -39,4 +48,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
 

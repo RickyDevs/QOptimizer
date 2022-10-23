@@ -8,7 +8,7 @@ class QCommandLineOption;
 
 class Program : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
 	explicit Program(QObject *parent = 0);
 	// call this to quit the application

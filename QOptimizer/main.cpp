@@ -4,6 +4,10 @@
 #include <QFile>
 #include <qt_windows.h>
 #include <io.h>
+#include <QQmlContext>
+
+#include "program.h"
+#include "qcominitializer.h"
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
@@ -11,6 +15,8 @@ QScopedPointer<QFile>   m_logFile;
 
 int main(int argc, char *argv[])
 {
+	QComInitializer comInit;
+
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QGuiApplication app(argc, argv);
 
@@ -39,6 +45,15 @@ int main(int argc, char *argv[])
 
 
 	QQmlApplicationEngine engine;
+	QQmlContext *context = engine.rootContext();
+
+	if (comInit.isOk()) {
+		comInit.initSecurity();
+	}
+
+	// Inject C++ class to QML
+	context->setContextProperty(QStringLiteral("program"), new Program(&engine));
+
 	engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 
 	return app.exec();

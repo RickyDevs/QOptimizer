@@ -14,7 +14,6 @@ include(../shared/shared.pri)
 
 SOURCES += main.cpp \
     required.cpp \
-    cleanhelper.cpp \
     program.cpp
 
 # The following define makes your compiler emit warnings if you use
@@ -30,5 +29,4 @@ DEFINES += QT_DEPRECATED_WARNINGS QO_CONSOLE
 
 HEADERS += \
     required.h \
-    cleanhelper.h \
     program.h

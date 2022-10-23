@@ -1,7 +1,9 @@
 <RCC>
     <qresource prefix="/">
-		<file>qtquickcontrols2.conf</file>
+        <file>qtquickcontrols2.conf</file>
         <file>qml/main.qml</file>
         <file>qml/Page1.qml</file>
+        <file>qml/controls/ToggleButton.qml</file>
+        <file>qml/js/models.js</file>
     </qresource>
 </RCC>

@@ -3,6 +3,22 @@ import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.0
 import QtQuick.Dialogs 1.1
 
+import "js/models.js" as Models
+
+/*
+
+import QtQuick 2.2
+import QtQuick.Window 2.2
+import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
+import QtQuick.Particles 2.0
+
+*/
+
+
+
+
 ApplicationWindow {
     visible: true
     width: 640
@@ -10,7 +26,7 @@ ApplicationWindow {
     minimumWidth: 400
     minimumHeight: 300
 
-    title: qsTr("Hello World")
+    title: qsTr("QOptimizer")
 
     MessageDialog {
         id: aboutBox
@@ -31,4 +47,19 @@ ApplicationWindow {
         }
     }
 
+    Page1 {
+        id: mainPage
+
+        anchors.fill: parent
+
+
+
+    }
+
+    Component.onCompleted: {
+        var x = program.createModel('MainModel', Models.mainModelData);
+        console.log(x, Models.mainModelData);
+
+        mainPage.model = x;
+    }
 }
