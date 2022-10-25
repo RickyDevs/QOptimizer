@@ -18,29 +18,31 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+import QtQuick 2.2
+import QtQuick.Controls 1.4
+import QtQuick.Controls.Styles 1.4
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
+TreeView {
+    id: treeView
 
-class Program : public QObject
-{
-	Q_OBJECT
-public:
-	explicit Program(QObject *parent = 0);
+    //width: flickableItem.contentWidth
+    height: flickableItem.contentHeight + 2
+    horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+    verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName, const QVariantList& modelData);
+    headerVisible: false
 
-public:
-	static bool UNSAFE_MODE;
+    //style: treeStyle
 
-//public slots:
-//	 void initServices();
+    TableViewColumn {
+        //role: "query"
+        role: "object"
+        width: 300
+        delegate: Component {
+            Label {
+                text: "query: " + styleData.value.Name
+            }
+        }
+    }
 
-private:
-	QWbemServices* wbemServices;
-};
-
-#endif // PROGRAM_H
+}

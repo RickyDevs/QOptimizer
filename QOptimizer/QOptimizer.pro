@@ -8,6 +8,8 @@ LIBS += -lwbemuuid
 QML_IMPORT_NAME = io.qoptimizer.backend
 QML_IMPORT_MAJOR_VERSION = 1
 
+qo_shared += wbem
+
 include(../shared/shared.pri)
 
 HEADERS += \
@@ -22,9 +24,10 @@ RESOURCES += qml.qrc
 
 OTHER_FILES += \
     qml/main.qml \
-qml/Page1.qml \
-qml/controls/ToggleButton.qml \
-qml/js/models.js
+    qml/Page1.qml \
+    qml/controls/ToggleButton.qml \
+    qml/page1/MainTreeView.qml \
+    qml/js/models.js
 
 
 # Additional import path used to resolve QML modules in Qt Creator's code model

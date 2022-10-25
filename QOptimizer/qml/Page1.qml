@@ -3,37 +3,15 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import "controls"
+import "page1"
 
 ScrollView {
 
     property alias model: treeView.model
 
-
-    TreeView {
+    MainTreeView {
         id: treeView
-
-        //width: flickableItem.contentWidth
-        height: flickableItem.contentHeight + 2
-        horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-        verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
-
-        headerVisible: false
-
-        //style: treeStyle
-
-        TableViewColumn {
-            //role: "query"
-            role: "object"
-            width: 300
-            delegate: Component {
-                Label {
-                    text: "query: " + styleData.value.query
-                }
-            }
-        }
-
     }
-
 
     ToggleButton {
         x:0

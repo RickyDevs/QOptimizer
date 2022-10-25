@@ -17,7 +17,7 @@ Program::Program(QObject *parent)
 
 QVariant Program::createModel(const QString& modelName, const QVariantList& modelData) {
 
-	MainModel* model = new MainModel(modelData, this);
+	MainModel* model = new MainModel(wbemServices, this);
 
 //	printf("%d %s", modelData.type(), modelData.typeName());
 

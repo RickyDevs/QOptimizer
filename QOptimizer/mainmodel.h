@@ -1,23 +1,56 @@
+/****************************************************************************
+**
+** QOptimizer
+** Copyright (C) 2022 by RickyDevs
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
 #ifndef MAINMODEL_H
 #define MAINMODEL_H
 
 #include <QObject>
 #include <QAbstractItemModel>
-#include <QVariantList>
+#include <QVariantMap>
+
+#include "qwbemservices.h"
+
+enum class TaskType {
+	Wbem,
+	Operations
+};
+
+struct Task {
+	TaskType type;
+	QString query;
+	QStringList fields;
+
+};
 
 struct MainModelItem {
 	int row;
 	int parent;
 	int sourceIdx;
-	QHash<QString, QVariant> dataMap;
+	QVariantMap dataMap;
+	std::vector<Task> taskList;
 	std::vector<int> childs;
-	bool pendingUpdate;
 
-	MainModelItem(int _row, int _parent, int _sourceIdx) {
-		row = _row;
+	MainModelItem(int _parent, const std::vector<Task>& _taskList) {
+		row = -1;
 		parent = _parent;
-		sourceIdx = _sourceIdx;
-		pendingUpdate = true;
+		taskList = _taskList;
 	}
 };
 
@@ -26,7 +59,7 @@ class MainModel : public QAbstractItemModel
 {
 	Q_OBJECT
 public:
-	explicit MainModel(const QVariantList& data, QObject *parent = nullptr);
+	explicit MainModel(QWbemServices* wbem, QObject* parent = nullptr);
 
 	// Basic functionality:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -39,12 +72,16 @@ public:
 
 	QHash<int, QByteArray> roleNames() const override;
 
-private:
-	void processItem(int idx);
+public slots:
+	void wbemResult(const QWbemQueryResult& queryResult);
 
-	QVariantList _sourceData;
-	int _processed;
-	std::vector<MainModelItem> _processedData;
+private:
+	void addModelData(int parentId, const QVariantMap& map, const std::vector<Task>& taskList);
+	void processTaskForItem(int itemId);
+
+	std::vector<MainModelItem> _modelData;
+	std::map<int, Task> _taskQueue;
+	QWbemServices* _wbem;
 };
 
 #endif // MAINMODEL_H

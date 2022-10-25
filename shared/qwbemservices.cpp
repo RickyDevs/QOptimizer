@@ -1,3 +1,22 @@
+/****************************************************************************
+**
+** QOptimizer
+** Copyright (C) 2022 by RickyDevs
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
 
 #include "qwbemservices.h"
 
@@ -19,32 +38,123 @@ struct QWbemServicesPrivate {
 
 // ----
 
-//class EventSink : public IWbemObjectSink
-//{
-//	LONG m_lRef;
-//	bool bDone;
+class ResponseSink : public IWbemObjectSink
+{
+	LONG _lRef;
+	QStringList _fieldList;
+	QVariantMap _initMap;
+	QWbemServices* _wbemServices;
+	QWbemQueryResult* _result;
 
-//public:
-//	EventSink() { m_lRef = 0; }
-//   ~EventSink() { bDone = true; }
+public:
+	ResponseSink(const QStringList& fieldList, int resultData, QWbemServices* wbem)
+	{
+		_lRef = 0;
+		_fieldList = fieldList;
+		_wbemServices = wbem;
+		_result = new QWbemQueryResult(resultData);
+	}
 
-//	virtual ULONG STDMETHODCALLTYPE AddRef();
-//	virtual ULONG STDMETHODCALLTYPE Release();
-//	virtual HRESULT
-//		STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppv);
+	~ResponseSink()
+	{
+		delete _result;
+	}
 
-//	virtual HRESULT STDMETHODCALLTYPE Indicate(
-//			LONG lObjectCount,
-//			IWbemClassObject __RPC_FAR *__RPC_FAR *apObjArray
-//			);
+	void setInitMap(const QVariantMap& map) {
+		_initMap = map;
+	}
 
-//	virtual HRESULT STDMETHODCALLTYPE SetStatus(
-//			/* [in] */ LONG lFlags,
-//			/* [in] */ HRESULT hResult,
-//			/* [in] */ BSTR strParam,
-//			/* [in] */ IWbemClassObject __RPC_FAR *pObjParam
-//			);
-//};
+	virtual ULONG STDMETHODCALLTYPE AddRef() override
+	{
+		return InterlockedIncrement(&_lRef);
+	}
+
+	virtual ULONG STDMETHODCALLTYPE Release() override
+	{
+		LONG lRef = InterlockedDecrement(&_lRef);
+		if (lRef == 0) {
+			delete this;
+		}
+		return lRef;
+	}
+
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppv) override
+	{
+		if (riid == IID_IUnknown || riid == IID_IWbemObjectSink) {
+			*ppv = (IWbemObjectSink *) this;
+			AddRef();
+			return WBEM_S_NO_ERROR;
+		}
+		return E_NOINTERFACE;
+	}
+
+	virtual HRESULT STDMETHODCALLTYPE Indicate(
+			LONG lObjectCount,
+			IWbemClassObject __RPC_FAR *__RPC_FAR *apObjArray) override
+	{
+		HRESULT hRes = S_OK;
+
+		QConvertBSTR _bstr;
+		std::vector<BSTR> fieldNameBSTRList;
+		for (QString f : _fieldList) {
+			fieldNameBSTRList.emplace_back(_bstr(f));
+		}
+
+		for (int i = 0; i < lObjectCount; i++)
+		{
+			VARIANT varValue;
+			QVariantMap map = _initMap;
+			int idx = 0;
+			for (BSTR fieldNameBstr : fieldNameBSTRList) {
+
+				hRes = apObjArray[i]->Get(fieldNameBstr, 0, &varValue, 0, 0);
+				if (FAILED(hRes))
+				{
+					//printf("Failed to get the data from the query" \
+					//		" Error code = 0x", hRes);
+					return WBEM_E_FAILED;       // Program has failed.
+				}
+
+				QString fieldName = _fieldList[idx];
+				if (V_VT(&varValue) == VT_I4) {
+					//printf("%s: %d\n", _field.toStdString().c_str(), varName.lVal);
+					map[fieldName] = V_INT(&varValue);
+				} else {
+					//printf("%s: %ls\n", _field.toStdString().c_str(), V_BSTR(&varName));
+					map[fieldName] = QString::fromWCharArray(V_BSTR(&varValue));
+
+				}
+				VariantClear(&varValue);
+				idx++;
+			}
+
+			_result->resultList.append(map);
+		}
+		_result->success = true;
+		return WBEM_S_NO_ERROR;
+	}
+
+	virtual HRESULT STDMETHODCALLTYPE SetStatus(
+			LONG lFlags,
+			HRESULT hResult,
+			BSTR strParam,
+			IWbemClassObject __RPC_FAR *pObjParam
+			) override
+	{
+		Q_UNUSED(hResult)
+		Q_UNUSED(strParam)
+		Q_UNUSED(pObjParam)
+		if (lFlags == WBEM_STATUS_COMPLETE) {
+			QWbemQueryResultPublisher* publisher = new QWbemQueryResultPublisher();
+			QObject::connect(publisher, &QWbemQueryResultPublisher::sinkResult, _wbemServices, &QWbemServices::sinkResult, Qt::QueuedConnection);
+
+			publisher->sendResult(this, _result);
+			delete publisher;
+		}
+
+		return WBEM_S_NO_ERROR;
+	}
+};
 
 // ----
 
@@ -119,54 +229,36 @@ bool QWbemServices::ensureConnected()
 	return true;
 }
 
-bool QWbemServices::query()
+bool QWbemServices::query(const QString& query, const QStringList& fieldList, int resultData)
 {
 	if (!ensureConnected()) {
 		return false;
 	}
 	QConvertBSTR _bstr;
 
-	//QHash<QString, QVariant> map;
-	QVariantMap map;
-
-	QVariant xx = QVariant::fromValue(map);
-
-	VARIANT v;
-
-	QVariant x = VARIANTToQVariant(v, "");
-
-	// TODO sleep(1) ... para deixar o sistema processar :P
-
-	return !x.isNull() && !xx.isNull();
 	// Receive event notifications -----------------------------
+	ResponseSink* sink = new ResponseSink(fieldList, resultData,  this);
+	sink->AddRef();
 
-	// Use an unsecured apartment for security
-//	IUnsecuredApartment* pUnsecApp = NULL;
-
-//	HRESULT hres = CoCreateInstance(CLSID_UnsecuredApartment, NULL,
-//		CLSCTX_LOCAL_SERVER, IID_IUnsecuredApartment,
-//		(void**)&pUnsecApp);
-
-//	EventSink* pSink = new EventSink;
-//	pSink->AddRef();
-
-//	IUnknown* pStubUnk = NULL;
-//	pUnsecApp->CreateObjectStub(pSink, &pStubUnk);
-
-//	IWbemObjectSink* pStubSink = NULL;
-//	pStubUnk->QueryInterface(IID_IWbemObjectSink,
-//		(void **) &pStubSink);
-
-//	// The ExecNotificationQueryAsync method will call
-//	// The EventQuery::Indicate method when an event occurs
-//	hres = _q->svc->ExecNotificationQueryAsync(
-//		_bstr("WQL"),
-//		_bstr("SELECT * "
-//			"FROM __InstanceCreationEvent WITHIN 1 "
-//			"WHERE TargetInstance ISA 'Win32_Process'"),
-//		WBEM_FLAG_SEND_STATUS,
-//		NULL,
-//		pStubSink);
-
+	// The ResponseSink::Indicate method when an event occurs
+	HRESULT hRes = _q->svc->ExecQueryAsync(
+		_bstr("WQL"),
+		_bstr(query),
+		WBEM_FLAG_SEND_STATUS,
+		NULL,
+		sink);
+	if (FAILED(hRes)) {
+		sink->Release();
+		return false;
+	}
 	return true;
+}
+
+void QWbemServices::sinkResult(void* sink, QWbemQueryResult* queryResult) {
+	printf("void QWbemServices::sinkResult(\n");
+
+	emit result(*queryResult);
+
+	printf("aku");
+	static_cast<IUnknown*>(sink)->Release();
 }

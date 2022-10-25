@@ -13,9 +13,7 @@ SOURCES += \
     $$PWD/registry.cpp \
     $$PWD/qtglobalmutex.cpp \
     $$PWD/errorlogger.cpp \
-    $$PWD/jsonconvert.cpp \
-    $$PWD/qwbemservices.cpp \
-    $$PWD/qcominitializer.cpp
+    $$PWD/jsonconvert.cpp
 
 HEADERS += \
     $$PWD/cleanhelper.h \
@@ -27,6 +25,19 @@ $$PWD/config.h \
     $$PWD/qtglobalmutex.h \
     $$PWD/errorlogger.h \
     $$PWD/jsonconvert.h \
-    $$PWD/qt_comutils.h \
-    $$PWD/qwbemservices.h \
-    $$PWD/qcominitializer.h
+    
+
+contains( qo_shared, wbem ) {
+    # qo_shared contains 'wbem'
+    message( "Configuring WBEM services build..." )
+
+    HEADERS += \
+        $$PWD/qt_comutils.h \
+        $$PWD/qcominitializer.h \
+        $$PWD/qwbemservices.h
+
+    SOURCES += \
+        $$PWD/qcominitializer.cpp \
+        $$PWD/qwbemservices.cpp
+
+}
