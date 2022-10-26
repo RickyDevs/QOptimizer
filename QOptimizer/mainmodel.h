@@ -36,6 +36,7 @@ struct Task {
 	TaskType type;
 	QString query;
 	QStringList fields;
+	QString objType;
 
 };
 

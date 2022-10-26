@@ -26,21 +26,68 @@ TreeView {
     id: treeView
 
     //width: flickableItem.contentWidth
-    height: flickableItem.contentHeight + 2
+    //height: flickableItem.contentHeight + 2
+    alternatingRowColors: false
+
     horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
     verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
 
     headerVisible: false
 
-    //style: treeStyle
+    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
+
+
+    Component {
+        id: treeStyle
+        TreeViewStyle {
+            frame: Item {}
+            backgroundColor: myPalette.alternateBase
+        }
+    }
+
+    style: treeStyle
+
+    rowDelegate: Component {
+        Item {
+            height: 50
+
+//            function bgColor() {
+//                if (styleData.pressed)
+//                    return 'red';//myPalette.dark
+//                if (styleData.hasActiveFocus)
+//                    return myPalette.dark;
+//                return 'blue'
+//            }
+//            Rectangle {
+//                anchors.fill: parent
+//                color: bgColor()
+
+//            }
+        }
+    }
 
     TableViewColumn {
         //role: "query"
         role: "object"
-        width: 300
+        width: parent.width
+
         delegate: Component {
-            Label {
-                text: "query: " + styleData.value.Name
+            Item {
+//                implicitHeight: 130
+                Rectangle {
+                    //anchors.fill: parent
+                    x: -parent.x
+                    width: treeView.width
+                    height: parent.height
+
+                    color: styleData.selected? myPalette.mid : myPalette.alternateBase
+                }
+
+                Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: parent.height * 0.25
+                    text: "[X] " + styleData.value.DisplayName
+                }
             }
         }
     }

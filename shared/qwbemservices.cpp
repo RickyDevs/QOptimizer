@@ -119,6 +119,8 @@ public:
 				if (V_VT(&varValue) == VT_I4) {
 					//printf("%s: %d\n", _field.toStdString().c_str(), varName.lVal);
 					map[fieldName] = V_INT(&varValue);
+				} else if (V_VT(&varValue) == VT_BOOL) {
+					map[fieldName] = V_BOOL(&varValue);
 				} else {
 					//printf("%s: %ls\n", _field.toStdString().c_str(), V_BSTR(&varName));
 					map[fieldName] = QString::fromWCharArray(V_BSTR(&varValue));

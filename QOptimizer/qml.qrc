@@ -6,5 +6,6 @@
         <file>qml/controls/ToggleButton.qml</file>
         <file>qml/js/models.js</file>
         <file>qml/page1/MainTreeView.qml</file>
+        <file>qml/page1/MainPanelView.qml</file>
     </qresource>
 </RCC>

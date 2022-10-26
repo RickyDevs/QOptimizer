@@ -22,35 +22,54 @@ import QtQuick 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
-import "controls"
-import "page1"
-
 Item {
 
-    property alias model: treeView.model
-
-    MainTreeView {
-        id: treeView
-        width: 320
-        height: parent.height
-
-
-
-        //onActivated: {
-        onClicked: {
-            var obj = treeView.model.data(index, 258);
-            //console.log(obj);
-            panelView.showObject(obj)
-            expand(index)
+    function showObject(obj) {
+        title.text = obj.DisplayName;
+        if (obj.Type.indexOf("HEADER") > 0) {
+            todo.text = "TODO: show list of items\n TODO: show optimizations on/off .. ( 0)"
+        } else if (obj.Type.indexOf("ITEM") > 0) {
+            todo.text = "TODO: show list of items"
+        } else {
+            todo.text = ""
         }
+
     }
 
-    MainPanelView {
-        id: panelView
+    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
+
+
+    Rectangle {
         anchors.fill: parent
-        anchors.leftMargin: treeView.width
+        color: myPalette.base
+    }
+
+    Item {
+        id: innerArea
+        anchors.fill: parent
+        anchors.margins: 18
+
+        Column {
+            x:0
+            y:4
+            spacing: 2
+
+            Label {
+                id: title
+                //font.bold: true
+                width: parent.width
+                //height: 80
+                font.pixelSize: 26
+            }
+
+
+            Label {
+                id: todo
+
+            }
+        }
+
+
     }
 
 }
-
-

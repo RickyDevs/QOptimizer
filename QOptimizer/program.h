@@ -31,7 +31,7 @@ class Program : public QObject
 public:
 	explicit Program(QObject *parent = 0);
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName, const QVariantList& modelData);
+	Q_INVOKABLE QVariant createModel(const QString& modelName);
 
 public:
 	static bool UNSAFE_MODE;
@@ -40,7 +40,9 @@ public:
 //	 void initServices();
 
 private:
-	QWbemServices* wbemServices;
+	QWbemServices* _wbemServices;
+
+	// TODO: _computerModel ?? em vez de MainModel..
 };
 
 #endif // PROGRAM_H

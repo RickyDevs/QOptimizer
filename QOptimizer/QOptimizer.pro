@@ -26,6 +26,7 @@ OTHER_FILES += \
     qml/main.qml \
     qml/Page1.qml \
     qml/controls/ToggleButton.qml \
+    qml/page1/MainPanelView.qml \
     qml/page1/MainTreeView.qml \
     qml/js/models.js
 

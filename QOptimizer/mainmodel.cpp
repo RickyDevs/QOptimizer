@@ -22,19 +22,35 @@
 
 #include "qwbemservices.h"
 
-QVariantMap makeUiEntry(const QString& name, const QString& icon) {
+QVariantMap makeUiEntry(const QString& name, const QString& icon, const QString& objType) {
 	QVariantMap map;
-	map["Name"] = QVariant(name);
+	map["DisplayName"] = QVariant(name);
 	map["Icon"] = QVariant(icon);
+	map["Type"] = QVariant(objType);
 	return map;
 }
 
-Task makeWbemTask(const QString& query, const QStringList& fields) {
+Task makeWbemTask(const QString& query, const QStringList& fields, const QString& objType) {
 	Task task;
 	task.type = TaskType::Wbem;
 	task.query = query;
 	task.fields = fields;
+	task.objType = objType;
 	return task;
+}
+
+QString displayName(const QVariantMap& map) {
+	QString type = map["Type"].toString();
+	if (type == "MEMORY_ITEM") {
+		return map["BankLabel"].toString();
+	}
+	if (type == "BOARD_ITEM") {
+		return map["Manufacturer"].toString();
+	}
+	if (type == "DRIVE_ITEM") {
+		return map["Model"].toString();
+	}
+	return map["Name"].toString();
 }
 
 MainModel::MainModel(QWbemServices* wbem, QObject *parent)
@@ -47,47 +63,54 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 	_modelData.emplace_back(root);
 
 	addModelData(0,
-				 makeUiEntry("Processors", "qrc://processor.png"),
+				 makeUiEntry("Processors", "qrc://processor.png", "PROCESSOR_HEADER"),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_Processor",
-					 {"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores"})
+					 {"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores"},
+					 "PROCESSOR_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Memory", "qrc://memory.png"),
+				 makeUiEntry("Memory", "qrc://memory.png", "MEMORY_HEADER"),
 				 {
 					 // Testar em Win7 ou Virtual Box
 					 makeWbemTask("SELECT * FROM Win32_PhysicalMemory",
-					 {"Manufacturer", "BankLabel", "Capacity", "Speed", "MemoryType", "FormFactor"})
+					 {"Manufacturer", "BankLabel", "Capacity", "Speed", "MemoryType", "FormFactor"},
+					 "MEMORY_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Motherboard", "qrc://motherboard.png"),
+				 makeUiEntry("Motherboard", "qrc://motherboard.png", "BOARD_HEADER"),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_BaseBoard",
-					 {"Model", "Manufacturer", "Product", "Version"})
+					 {"Model", "Manufacturer", "Product", "Version"},
+					 "BOARD_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Graphics", "qrc://graphics.png"),
+				 makeUiEntry("Graphics", "qrc://graphics.png", "PROCESSOR_HEADER"),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_VideoController",
-					 {"Name", "AdapterRAM", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate", "AdapterDACType", "VideoMemoryType"})
+					 {"Name", "AdapterRAM", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate", "AdapterDACType", "VideoMemoryType"},
+					 "GRAPHIC_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Disk Drives", "qrc://disk_drive.png"),
+				 makeUiEntry("Disk Drives", "qrc://disk_drive.png", "DRIVE_HEADER"),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_DiskDrive",
-					 {"Model", "BytesPerSector", "FirmwareRevision", "MediaType", "Size"})
+					 {"Model", "BytesPerSector", "FirmwareRevision", "MediaType", "Size"},
+					 "DRIVE_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Network Adapters", "qrc://network_adapters.png"),
+				 makeUiEntry("Network Adapters", "qrc://network_adapters.png", "PROCESSOR_HEADER"),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_NetworkAdapter",
-					 {"AdapterType", "Manufacturer", "ProductName", "PhysicalAdapter", "MacAddress", "ServiceName"})
+					 {"AdapterType", "Manufacturer", "ProductName", "PhysicalAdapter", "MacAddress", "ServiceName"},
+					 "PROCESSOR_HEADER")
 				 });
 	addModelData(0,
-				 makeUiEntry("BIOS", "qrc://bios.png"),
+				 makeUiEntry("BIOS", "qrc://bios.png", "PROCESSOR_HEADER"),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_BIOS",
-					 {"Name", "Manufacturer", "Version", "BuildNumber"})
+					 {"Name", "Manufacturer", "Version", "BuildNumber"},
+					 "PROCESSOR_HEADER")
 				 });
 
 	//wbem->query("SELECT * FROM Win32_Processor", {"Name"}, 6969);
@@ -202,8 +225,11 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 	if (queryResult.resultList.size() > 0) {
 		for (QVariant v : queryResult.resultList) {
 			QVariantMap map = v.toMap();
-			QString name = map["Name"].toString();
-			if (name != "") {
+			map["Type"] = QVariant(_taskQueue[queryResult.resultData].objType);
+			QString displayNameStr = displayName(map);
+			// TODO "Unknown" display name?
+			if (displayNameStr != "") {
+				map["DisplayName"] = QVariant(displayNameStr);
 				addModelData(queryResult.resultData, map, {});
 			}
 		}
@@ -214,48 +240,6 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 	if (oldChildCount != newChildCount) {
 		insertRows(oldChildCount, newChildCount - oldChildCount, createIndex(item.row, 0, queryResult.resultData));
 	}
-	//processTaskForItem();
-
 }
 
-//	// FIXME.. carregar todos os child.. e deixar 1 para processing..
-//	printf("processItem idx: %d\n", idx);
-//	auto& item = _processedData[idx];
 
-//	// descubrir filhos..
-///*	QVariantList childList;
-//	if (item.sourceIdx < 0) {
-//		childList = _sourceData;
-//	} else {
-//		Q_ASSERT_X(false, "processItem", "falta processar items");
-//		return;
-//	}*/
-
-//	int it = 0;
-//	for (QVariant v : childList) {
-//		QVariant value = v.toMap()["value"];
-//		if (value.isNull() && item.childs.size() == it) {
-//			// create pending child
-//			MainModelItem childItem(it, idx, 0);
-//			childItem.dataMap = v.toMap();
-//			item.childs.emplace_back(_processedData.size());
-//			_processedData.emplace_back(childItem);
-//			break;
-//		} else {
-//			Q_ASSERT_X(false, "processItem", "saltar child processed");
-//			it++;
-//		}
-//	}
-
-//	// processar filhos
-//	const auto& childs = _processedData.at(idx).childs;
-//	for (int id0 : childs) {
-//		QVariantList id0ChildList = _processedData.at(idx).dataMap["childs"].toList();
-//		if (id0ChildList.size() > 0) {
-//			processItemChildList(id0, id0ChildList);
-//		}
-//	}
-///*	if (item.hasMoreChilds) {
-
-//	}*/
-//}
