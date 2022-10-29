@@ -18,34 +18,25 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef QOPTIMIZEPROXYMANAGER_H
+#define QOPTIMIZEPROXYMANAGER_H
 
 #include <QObject>
 #include <QVariant>
-#include "qwbemservices.h"
+#include "qoptimizeproxyitem.h"
 
-class Program : public QObject
+class QOptimizeProxyManager : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Program(QObject *parent = 0);
+	explicit QOptimizeProxyManager(QObject *parent = 0);
+	~QOptimizeProxyManager() {}
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+	Q_INVOKABLE QList<QObject*> query();
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
-
-public:
-	static bool UNSAFE_MODE;
+//signals:
 
 //public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
-
-private:
-	QWbemServices* _wbemServices;
 };
 
-#endif // PROGRAM_H
+#endif // QOPTIMIZEPROXYMANAGER_H

@@ -21,6 +21,7 @@
 #include "program.h"
 
 #include "mainmodel.h"
+#include "qoptimizeproxymanager.h"
 
 bool Program::UNSAFE_MODE = false;
 
@@ -47,4 +48,14 @@ QVariant Program::createModel(const QString& modelName) {
 
 	//return "From c++ " + modelName;
 	return QVariant();
+}
+
+QString Program::version()
+{
+	return "TODO";
+}
+
+QString Program::buildDate()
+{
+	return "TODO: build date";
 }

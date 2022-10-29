@@ -18,34 +18,19 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef PERFORMANCETWEAKS_H
+#define PERFORMANCETWEAKS_H
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
+#include "optimizestdcalls.h"
 
-class Program : public QObject
+class PerformanceTweaks : public OptimizeStdCalls
 {
-	Q_OBJECT
 public:
-	explicit Program(QObject *parent = 0);
+	explicit PerformanceTweaks();
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+	//QString name() override;
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
 
-public:
-	static bool UNSAFE_MODE;
-
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
-
-private:
-	QWbemServices* _wbemServices;
 };
 
-#endif // PROGRAM_H
+#endif // PERFORMANCETWEAKS_H

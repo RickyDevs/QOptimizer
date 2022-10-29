@@ -18,34 +18,21 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef OPTIMIZEMANAGER_H
+#define OPTIMIZEMANAGER_H
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
+#include <memory>
+#include "optimizebaseitem.h"
 
-class Program : public QObject
+class OptimizeManager
 {
-	Q_OBJECT
 public:
-	explicit Program(QObject *parent = 0);
+	explicit OptimizeManager();
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
-
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
-
-public:
-	static bool UNSAFE_MODE;
-
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
+	std::vector<std::shared_ptr<OptimizeBaseItem>> query();
 
 private:
-	QWbemServices* _wbemServices;
+	void ensureLoaded();
 };
 
-#endif // PROGRAM_H
+#endif // OPTIMIZEMANAGER_H

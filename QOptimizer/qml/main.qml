@@ -50,15 +50,52 @@ ApplicationWindow {
 
     MessageDialog {
         id: aboutBox
+
         title: "About QOptimizer"
-        text: "This is a basic text editor \nwritten with Qt Quick Controls"
+        text: "QOptimizer " + program.version
+
+        informativeText: "\nBased on Optimizer by ....."
+                         + "\n\nBuild on " + program.buildDate
+                         + "\n\n2022 Develop by RickyDevs"
+                         + "\n\nThe program is provided AS IS with NO WARRANTY OF ANY KIND.\nAll changes performed to the system are user driven and USE BY YOUR ON RISK.\n"
+
         icon: StandardIcon.Information
     }
 
+    MessageDialog {
+        id: todoBox
+        title: "About QOptimizer"
+        text: "TODO"
+        icon: StandardIcon.Information
+    }
+
+    ExclusiveGroup {
+          id: radioInputGroup
+    }
 
     menuBar: MenuBar {
         Menu {
-            title: "&File"
+            title: "&Profiles"
+            MenuItem {
+                text: "&All";
+                checkable: true
+                checked: true
+                exclusiveGroup: radioInputGroup
+                onTriggered: todoBox.open()
+            }
+            MenuItem {
+                text: "&Gamer";
+                checkable: true
+                exclusiveGroup: radioInputGroup
+                onTriggered: todoBox.open()
+            }
+            MenuItem {
+                text: "&Internet/office work";
+                checkable: true
+                exclusiveGroup: radioInputGroup
+                onTriggered: todoBox.open()
+            }
+            MenuSeparator {}
             MenuItem { text: "Quit"; onTriggered: Qt.quit() }
         }
         Menu {
@@ -71,9 +108,6 @@ ApplicationWindow {
         id: mainPage
 
         anchors.fill: parent
-
-
-
     }
 
     Component.onCompleted: {

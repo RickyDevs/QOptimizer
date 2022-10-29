@@ -12,13 +12,19 @@ qo_shared += wbem
 
 include(../shared/shared.pri)
 
+INCLUDEPATH += $$PWD/optimize
+
 HEADERS += \
     program.h \
-    mainmodel.h
+    mainmodel.h \
+    optimize/qoptimizeproxyitem.h \
+    optimize/qoptimizeproxymanager.h
 
 SOURCES += main.cpp \
     program.cpp \
-    mainmodel.cpp
+    mainmodel.cpp \
+    optimize/qoptimizeproxyitem.cpp \
+    optimize/qoptimizeproxymanager.cpp
 
 RESOURCES += qml.qrc
 
@@ -28,6 +34,7 @@ OTHER_FILES += \
     qml/controls/ToggleButton.qml \
     qml/page1/MainPanelView.qml \
     qml/page1/MainTreeView.qml \
+    qml/pageX/ProfileActivatePage.qml \
     qml/js/models.js
 
 

@@ -18,34 +18,13 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#include "optimizestdcalls.h"
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
-
-class Program : public QObject
+OptimizeStdCalls::OptimizeStdCalls()
 {
-	Q_OBJECT
-public:
-	explicit Program(QObject *parent = 0);
+}
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
-
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
-
-public:
-	static bool UNSAFE_MODE;
-
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
-
-private:
-	QWbemServices* _wbemServices;
-};
-
-#endif // PROGRAM_H
+void OptimizeStdCalls::checkOriginalStateImpl()
+{
+	Q_ASSERT(false);
+}

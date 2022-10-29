@@ -34,6 +34,9 @@ Item {
             todo.text = ""
         }
 
+        var list = optimizeManager.query();
+        console.log("list.lenght", list.length);
+        list[0].activate();
     }
 
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
@@ -68,8 +71,6 @@ Item {
 
             }
         }
-
-
     }
 
 }

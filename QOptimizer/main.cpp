@@ -28,6 +28,7 @@
 
 #include "program.h"
 #include "qcominitializer.h"
+#include "qoptimizeproxymanager.h"
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
@@ -43,25 +44,25 @@ int main(int argc, char *argv[])
 //	QQuickStyle::setStyle("Material");
 	// Set the logging file
 	// check which a path to file you use
-	m_logFile.reset(new QFile("logFile.txt"));
+	//m_logFile.reset(new QFile("logFile.txt"));
 	// Open the file logging
 	//m_logFile.data()->open(QFile::Append | QFile::Text);
 	// Set handler
-	qInstallMessageHandler(messageHandler);
+	// qInstallMessageHandler(messageHandler);
 
-	FILE *loggingStreamStdout;
-		   FILE *loggingStreamStderr;
-	//	   QFile loggingFile("app.log");
+	// FILE *loggingStreamStdout;
+		   // FILE *loggingStreamStderr;
+		  // QFile loggingFile("app.log");
 
-		   m_logFile.data()->open(QIODevice::Text | QIODevice::Append | QIODevice::Unbuffered);
-		   int fd = m_logFile.data()->handle();
+		   // m_logFile.data()->open(QIODevice::Text | QIODevice::Append | QIODevice::Unbuffered);
+		   // int fd = m_logFile.data()->handle();
 
-		   freopen_s(&loggingStreamStdout, "\\\\.\\NUL", "w", stdout);
-		   setvbuf(loggingStreamStdout, NULL, _IONBF, 0);
-		   freopen_s(&loggingStreamStderr, "\\\\.\\NUL", "w", stderr);
-		   setvbuf(loggingStreamStderr, NULL, _IONBF, 0);
-		   _dup2(fd, _fileno(stdout));
-		   _dup2(fd, _fileno(stderr));
+		   // freopen_s(&loggingStreamStdout, "\\\\.\\NUL", "w", stdout);
+		   // setvbuf(loggingStreamStdout, NULL, _IONBF, 0);
+		   // freopen_s(&loggingStreamStderr, "\\\\.\\NUL", "w", stderr);
+		   // setvbuf(loggingStreamStderr, NULL, _IONBF, 0);
+		   // _dup2(fd, _fileno(stdout));
+		   // _dup2(fd, _fileno(stderr));
 
 
 	QQmlApplicationEngine engine;
@@ -72,6 +73,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Inject C++ class to QML
+	context->setContextProperty(QStringLiteral("optimizeManager"), new QOptimizeProxyManager(&engine));
 	context->setContextProperty(QStringLiteral("program"), new Program(&engine));
 
 	engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));

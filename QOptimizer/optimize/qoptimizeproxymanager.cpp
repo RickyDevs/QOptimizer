@@ -18,34 +18,50 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#include "qoptimizeproxymanager.h"
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
-
-class Program : public QObject
+QOptimizeProxyManager::QOptimizeProxyManager(QObject *parent)
+	: QObject(parent)
 {
-	Q_OBJECT
-public:
-	explicit Program(QObject *parent = 0);
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+}
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
+/*
+QVariantList QOptimizeProxyManager::query()
+{
+	printf("TODO:QOptimizeProxyManager::query ");
 
-public:
-	static bool UNSAFE_MODE;
+	QVariantList list;
 
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
+	list.append(QVariant());
 
-private:
-	QWbemServices* _wbemServices;
-};
+	return list;
+}
+*/
 
-#endif // PROGRAM_H
+/*
+QList<QOptimizeProxyItem*> QOptimizeProxyManager::query()
+{
+	printf("TODO:QOptimizeProxyManager::query ");
+
+	QList<QOptimizeProxyItem*> list;
+
+	list.append(new QOptimizeProxyItem(this));
+
+	return list;
+}
+*/
+
+
+
+QList<QObject*> QOptimizeProxyManager::query()
+{
+	printf("TODO:QOptimizeProxyManager::query \n");
+
+	QList<QObject*> list;
+
+	list.append(new QOptimizeProxyItem(this));
+
+	return list;
+}
+

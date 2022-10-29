@@ -18,34 +18,31 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef OPTIMIZEBASEITEM_H
+#define OPTIMIZEBASEITEM_H
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
+#include <QString>
 
-class Program : public QObject
-{
-	Q_OBJECT
-public:
-	explicit Program(QObject *parent = 0);
-
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
-
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
-
-public:
-	static bool UNSAFE_MODE;
-
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
-
-private:
-	QWbemServices* _wbemServices;
+enum class OptimizeType { // ???
+	Enable
 };
 
-#endif // PROGRAM_H
+class OptimizeBaseItem
+{
+public:
+	OptimizeBaseItem();
+
+	virtual void activate();
+	virtual void deactivate();
+	virtual bool isActive();
+	virtual bool isActiveFromOrigin();
+
+	virtual QString name();
+	virtual QString description();
+	virtual QString tags();
+	virtual QString profiles();
+
+	virtual void checkOriginalStateImpl();
+};
+
+#endif // OPTIMIZEBASEITEM_H

@@ -18,34 +18,21 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef OPTIMIZESTDCALLS_H
+#define OPTIMIZESTDCALLS_H
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
+#include "optimizebaseitem.h"
 
-class Program : public QObject
+#include <functional>
+
+class OptimizeStdCalls : public OptimizeBaseItem
 {
-	Q_OBJECT
 public:
-	explicit Program(QObject *parent = 0);
+	OptimizeStdCalls();
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+	void checkOriginalStateImpl() override;
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
-
-public:
-	static bool UNSAFE_MODE;
-
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
-
-private:
-	QWbemServices* _wbemServices;
+	std::function<void()> _activateCall;
 };
 
-#endif // PROGRAM_H
+#endif // OPTIMIZESTDCALLS_H

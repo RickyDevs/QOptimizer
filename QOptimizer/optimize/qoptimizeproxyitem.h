@@ -18,34 +18,31 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef QOPTIMIZEPROXYITEM_H
+#define QOPTIMIZEPROXYITEM_H
 
+#include <memory>
 #include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
+#include "optimizebaseitem.h"
 
-class Program : public QObject
+class QOptimizeProxyItem : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Program(QObject *parent = 0);
+	explicit QOptimizeProxyItem(QObject* parent);
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+	Q_INVOKABLE void activate();
+	Q_INVOKABLE void deactivate();
+	Q_INVOKABLE bool isActive();
+	Q_INVOKABLE bool isActiveFromOrigin();
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
-
-public:
-	static bool UNSAFE_MODE;
-
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
+	Q_INVOKABLE QString name();
+	Q_INVOKABLE QString description();
+	Q_INVOKABLE QString tags();
+	Q_INVOKABLE QString profiles();
 
 private:
-	QWbemServices* _wbemServices;
+	std::shared_ptr<OptimizeBaseItem> _item;
 };
 
-#endif // PROGRAM_H
+#endif // OPTIMIZEPROXYITEM_H

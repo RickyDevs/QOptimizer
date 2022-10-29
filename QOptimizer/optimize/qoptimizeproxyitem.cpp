@@ -18,34 +18,53 @@
 **
 ****************************************************************************/
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#include "qoptimizeproxyitem.h"
 
-#include <QObject>
-#include <QVariant>
-#include "qwbemservices.h"
-
-class Program : public QObject
+QOptimizeProxyItem::QOptimizeProxyItem(QObject* parent)
+	: QObject(parent)
 {
-	Q_OBJECT
-public:
-	explicit Program(QObject *parent = 0);
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+}
 
-	Q_INVOKABLE QVariant createModel(const QString& modelName);
 
-public:
-	static bool UNSAFE_MODE;
+void QOptimizeProxyItem::activate()
+{
+	printf("QOptimizeProxyItem::activate()\n");
+}
 
-//public slots:
-//	 void initServices();
-	QString version();
-	QString buildDate();
+void QOptimizeProxyItem::deactivate()
+{
 
-private:
-	QWbemServices* _wbemServices;
-};
+}
 
-#endif // PROGRAM_H
+bool QOptimizeProxyItem::isActive()
+{
+	return false;
+}
+
+bool QOptimizeProxyItem::isActiveFromOrigin()
+{
+	return false;
+}
+
+
+QString QOptimizeProxyItem::name()
+{
+	return "";
+}
+
+QString QOptimizeProxyItem::description()
+{
+	return "";
+}
+
+QString QOptimizeProxyItem::tags()
+{
+	return "";
+}
+
+QString QOptimizeProxyItem::profiles()
+{
+	return "";
+}
+

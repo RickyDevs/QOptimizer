@@ -1,5 +1,5 @@
 
-INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD $$PWD/optimize
 
 include(../3rdparty/qtservice/src/qtservice.pri)
 
@@ -9,6 +9,10 @@ SOURCES += \
     $$PWD/cleanhelper.cpp \
     $$PWD/config.cpp \
     $$PWD/configops.cpp \
+    $$PWD/optimize/optimizebaseitem.cpp \
+    $$PWD/optimize/optimizemanager.cpp \
+    $$PWD/optimize/optimizestdcalls.cpp \
+    $$PWD/optimize/performancetweaks.cpp \
     $$PWD/utilities.cpp \
     $$PWD/registry.cpp \
     $$PWD/qtglobalmutex.cpp \
@@ -17,14 +21,18 @@ SOURCES += \
 
 HEADERS += \
     $$PWD/cleanhelper.h \
-$$PWD/config.h \
+    $$PWD/config.h \
     $$PWD/configops.h \
+    $$PWD/optimize/optimizebaseitem.h \
+    $$PWD/optimize/optimizemanager.h \
+    $$PWD/optimize/optimizestdcalls.h \
+    $$PWD/optimize/performancetweaks.h \
     $$PWD/utilities.h \
     $$PWD/enums.h \
     $$PWD/registry.h \
     $$PWD/qtglobalmutex.h \
     $$PWD/errorlogger.h \
-    $$PWD/jsonconvert.h \
+    $$PWD/jsonconvert.h
     
 
 contains( qo_shared, wbem ) {
