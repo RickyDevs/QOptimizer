@@ -20,11 +20,22 @@
 
 #include "optimizestdcalls.h"
 
-OptimizeStdCalls::OptimizeStdCalls()
+OptimizeStdCalls::OptimizeStdCalls(const char* identifier)
+	: OptimizeBaseItem(identifier), _name(nullptr), _description(nullptr)
 {
 }
 
 void OptimizeStdCalls::checkOriginalStateImpl()
 {
 	Q_ASSERT(false);
+}
+
+QString OptimizeStdCalls::name()
+{
+	return QString::fromLatin1(_name);
+}
+
+QString OptimizeStdCalls::description()
+{
+	return QString::fromLatin1(_description);
 }

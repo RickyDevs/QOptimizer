@@ -31,8 +31,8 @@ class Program : public QObject
 public:
 	explicit Program(QObject *parent = 0);
 
-	Q_PROPERTY(QString version READ version)
-	Q_PROPERTY(QString buildDate READ buildDate)
+	Q_PROPERTY(QString version READ version CONSTANT)
+	Q_PROPERTY(QString buildDate READ buildDate CONSTANT)
 
 	Q_INVOKABLE QVariant createModel(const QString& modelName);
 

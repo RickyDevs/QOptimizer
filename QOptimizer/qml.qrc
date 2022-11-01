@@ -7,5 +7,6 @@
         <file>qml/js/models.js</file>
         <file>qml/page1/MainTreeView.qml</file>
         <file>qml/page1/MainPanelView.qml</file>
+        <file>qml/controls/OptimizeItem.qml</file>
     </qresource>
 </RCC>

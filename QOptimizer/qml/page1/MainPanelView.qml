@@ -21,6 +21,7 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
+import "../controls"
 
 Item {
 
@@ -34,12 +35,47 @@ Item {
             todo.text = ""
         }
 
-        var list = optimizeManager.query();
-        console.log("list.lenght", list.length);
-        list[0].activate();
+        var modelList = optimizeManager.query();
+        console.log("list.lenght", modelList.length);
+        //if (!list[0].isActive) {
+            //list[0].activate();
+        //}
+        optimizeItemList.model = countModelListItems(modelList)
+        var idx = 0;
+        for (var x in modelList) {
+            //console.log(optimizeItemList.itemAt(idx));
+            var modelItem = modelList[x];
+
+            optimizeItemList.itemAt(idx).model = modelItem;
+            idx++;
+
+            if (modelItem.childItems.length > 0) {
+            //    optimizeItemList.model += modelItem.childItems.length
+                for (var y in modelItem.childItems) {
+                    var modelSubItem = modelItem.childItems[y];
+
+                    optimizeItemList.itemAt(idx).model = modelSubItem;
+                    optimizeItemList.itemAt(idx).indent = 1;
+                    idx++;
+
+                }
+            }
+
+        }
     }
 
-    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
+    function countModelListItems(modelList) {
+        var count = modelList.length;
+        for (var x in modelList) {
+            count+= modelList[x].childItems.length;
+        }
+        return count;
+    }
+
+    SystemPalette {
+        id: myPalette;
+        colorGroup: SystemPalette.Active
+    }
 
 
     Rectangle {
@@ -53,6 +89,7 @@ Item {
         anchors.margins: 18
 
         Column {
+            id: header
             x:0
             y:4
             spacing: 2
@@ -69,6 +106,20 @@ Item {
             Label {
                 id: todo
 
+            }
+        }
+
+        Column {
+            anchors.top: header.bottom
+            anchors.topMargin: 6
+            x: 0
+            Repeater {
+                id: optimizeItemList
+                delegate: Component {
+                    OptimizeItem {
+
+                    }
+                }
             }
         }
     }

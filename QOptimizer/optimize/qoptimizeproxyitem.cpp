@@ -20,8 +20,8 @@
 
 #include "qoptimizeproxyitem.h"
 
-QOptimizeProxyItem::QOptimizeProxyItem(QObject* parent)
-	: QObject(parent)
+QOptimizeProxyItem::QOptimizeProxyItem(std::shared_ptr<OptimizeBaseItem> item, QObject* parent)
+	: QObject(parent), _item(item)
 {
 
 }
@@ -30,41 +30,73 @@ QOptimizeProxyItem::QOptimizeProxyItem(QObject* parent)
 void QOptimizeProxyItem::activate()
 {
 	printf("QOptimizeProxyItem::activate()\n");
+	if (_item) {
+		_item->activate();
+	}
 }
 
 void QOptimizeProxyItem::deactivate()
 {
-
+	if (_item) {
+		_item->deactivate();
+	}
 }
 
 bool QOptimizeProxyItem::isActive()
 {
+	if (_item) {
+		return _item->isActive();
+	}
 	return false;
 }
 
 bool QOptimizeProxyItem::isActiveFromOrigin()
 {
+	if (_item) {
+		return _item->isActiveFromOrigin();
+	}
 	return false;
 }
 
 
 QString QOptimizeProxyItem::name()
 {
+	if (_item) {
+		return _item->name();
+	}
 	return "";
 }
 
 QString QOptimizeProxyItem::description()
 {
+	if (_item) {
+		return _item->description();
+	}
 	return "";
 }
 
 QString QOptimizeProxyItem::tags()
 {
+	if (_item) {
+		return _item->tags();
+	}
 	return "";
 }
 
 QString QOptimizeProxyItem::profiles()
 {
+	if (_item) {
+		return _item->profiles();
+	}
 	return "";
 }
 
+void QOptimizeProxyItem::addProxyItem(QOptimizeProxyItem *item)
+{
+	_proxyItems.append(item);
+}
+
+QList<QObject*> QOptimizeProxyItem::childItems()
+{
+	return _proxyItems;
+}

@@ -21,6 +21,7 @@
 #ifndef OPTIMIZEBASEITEM_H
 #define OPTIMIZEBASEITEM_H
 
+#include <memory>
 #include <QString>
 
 enum class OptimizeType { // ???
@@ -30,7 +31,10 @@ enum class OptimizeType { // ???
 class OptimizeBaseItem
 {
 public:
-	OptimizeBaseItem();
+	OptimizeBaseItem(const char* identifier);
+	virtual ~OptimizeBaseItem() {}
+
+	QString identifier();
 
 	virtual void activate();
 	virtual void deactivate();
@@ -42,7 +46,11 @@ public:
 	virtual QString tags();
 	virtual QString profiles();
 
+	virtual std::vector<std::shared_ptr<OptimizeBaseItem>> items();
+
 	virtual void checkOriginalStateImpl();
+private:
+	const char* _identifier;
 };
 
 #endif // OPTIMIZEBASEITEM_H

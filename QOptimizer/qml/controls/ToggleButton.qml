@@ -4,8 +4,8 @@ import QtQuick.Controls 1.2
 Item {
     id: button1
     state: "off"
-    width: 72
-    height: 38
+    width: 66
+    height: 32
     property string backgroundColorOn: ''
 
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
@@ -13,7 +13,7 @@ Item {
     Rectangle {
         id: background0
         anchors.fill: parent
-        anchors.margins: 6
+        anchors.margins: 1
         border.width: 3
         border.color: myPalette.shadow
         radius: height

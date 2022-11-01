@@ -28,9 +28,17 @@
 class OptimizeStdCalls : public OptimizeBaseItem
 {
 public:
-	OptimizeStdCalls();
+	OptimizeStdCalls(const char* identifier);
+	virtual ~OptimizeStdCalls() {}
+
+
+	QString name() override;
+	QString description() override;
 
 	void checkOriginalStateImpl() override;
+
+	const char* _name;
+	const char* _description;
 
 	std::function<void()> _activateCall;
 };

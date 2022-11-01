@@ -10,6 +10,7 @@ SOURCES += \
     $$PWD/config.cpp \
     $$PWD/configops.cpp \
     $$PWD/optimize/optimizebaseitem.cpp \
+    $$PWD/optimize/optimizegroupitem.cpp \
     $$PWD/optimize/optimizemanager.cpp \
     $$PWD/optimize/optimizestdcalls.cpp \
     $$PWD/optimize/performancetweaks.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     $$PWD/config.h \
     $$PWD/configops.h \
     $$PWD/optimize/optimizebaseitem.h \
+    $$PWD/optimize/optimizegroupitem.h \
     $$PWD/optimize/optimizemanager.h \
     $$PWD/optimize/optimizestdcalls.h \
     $$PWD/optimize/performancetweaks.h \

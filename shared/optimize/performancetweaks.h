@@ -21,15 +21,19 @@
 #ifndef PERFORMANCETWEAKS_H
 #define PERFORMANCETWEAKS_H
 
-#include "optimizestdcalls.h"
+#include "optimizegroupitem.h"
 
-class PerformanceTweaks : public OptimizeStdCalls
+class PerformanceTweaks : public OptimizeGroupItem
 {
 public:
 	explicit PerformanceTweaks();
 
-	//QString name() override;
+	QString name() override;
 
+	QString description() override;
+
+protected:
+	void loadItems() override;
 
 };
 

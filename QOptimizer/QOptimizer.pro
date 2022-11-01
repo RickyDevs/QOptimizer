@@ -1,3 +1,4 @@
+
 QT += qml quick axcontainer
 QT -= widgets svg d3d
 
@@ -31,6 +32,7 @@ RESOURCES += qml.qrc
 OTHER_FILES += \
     qml/main.qml \
     qml/Page1.qml \
+    qml/controls/OptimizeItem.qml \
     qml/controls/ToggleButton.qml \
     qml/page1/MainPanelView.qml \
     qml/page1/MainTreeView.qml \

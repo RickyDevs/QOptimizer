@@ -19,19 +19,40 @@
 ****************************************************************************/
 
 #include "optimizemanager.h"
+#include "performancetweaks.h"
 
 OptimizeManager::OptimizeManager()
 {
 }
 
-std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeManager::query()
+std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeManager::items()
 {
-	static std::vector<std::shared_ptr<OptimizeBaseItem>> emptyVector;
+	ensureLoaded();
 
-	return emptyVector;
+	return _items;
 }
 
 void OptimizeManager::ensureLoaded()
 {
+	if (_items.size() == 0) {
 
+
+		//static std::vector<std::shared_ptr<OptimizeBaseItem>> emptyVector;
+
+
+
+		//std::shared_ptr<OptimizeStdCalls> xxx  = std::make_shared<OptimizeStdCalls>();
+
+		//xxx->_name = "4.96 MB -- reduce dump file size";
+		//xxx->_description = "27/07/2022 -- reduce dump file size";
+
+		_items.push_back(std::make_shared<PerformanceTweaks>());
+
+
+		//if (result.size() > 0) {
+			//return result;
+		//
+
+		//return emptyVector;
+	}
 }

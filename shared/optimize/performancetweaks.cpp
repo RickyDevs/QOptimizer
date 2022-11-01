@@ -19,8 +19,47 @@
 ****************************************************************************/
 
 #include "performancetweaks.h"
+#include "optimizestdcalls.h"
 
 PerformanceTweaks::PerformanceTweaks()
 {
 
+}
+
+QString PerformanceTweaks::name()
+{
+	return QString::fromLatin1("Performance Tweaks");
+}
+
+QString PerformanceTweaks::description()
+{
+	return QString::fromLatin1("Performance Tweaks description");
+}
+
+
+void PerformanceTweaks::loadItems()
+{
+	//Q_ASSERT(false);
+	auto xxx = std::make_shared<OptimizeStdCalls>("AutoCompleteRunDialog");
+	xxx->_name = "Enable auto-complete in Run Dialog";
+	xxx->_description = "";
+	_items.push_back(xxx);
+
+	xxx = std::make_shared<OptimizeStdCalls>("DumpFileSize");
+	xxx->_name = "Reduce dump file size";
+	xxx->_description = "TODO: Disk Drives";
+	_items.push_back(xxx);
+
+
+	xxx = std::make_shared<OptimizeStdCalls>("RemoteAssistance");
+	xxx->_name = "Disable Remote Assistance";
+	xxx->_description = "TODO: Network stuff";
+	_items.push_back(xxx);
+
+	xxx = std::make_shared<OptimizeStdCalls>("ShakingAnimation");
+	xxx->_name = "Disable shaking to minimize";
+	xxx->_description = "";
+	_items.push_back(xxx);
+
+	// SuperFetch -> memory
 }

@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QVariant>
 #include "qoptimizeproxyitem.h"
+#include "optimizemanager.h"
+
 
 class QOptimizeProxyManager : public QObject
 {
@@ -37,6 +39,8 @@ public:
 //signals:
 
 //public slots:
+private:
+	std::unique_ptr<OptimizeManager> _optimizeManager;
 };
 
 #endif // QOPTIMIZEPROXYMANAGER_H

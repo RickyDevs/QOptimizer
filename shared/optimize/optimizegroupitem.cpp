@@ -18,23 +18,17 @@
 **
 ****************************************************************************/
 
-#ifndef OPTIMIZEMANAGER_H
-#define OPTIMIZEMANAGER_H
+#include "optimizegroupitem.h"
 
-#include "optimizebaseitem.h"
-
-class OptimizeManager
+OptimizeGroupItem::OptimizeGroupItem()
+	: OptimizeBaseItem("GroupItem")
 {
-public:
-	OptimizeManager();
-	~OptimizeManager() {}
+}
 
-	std::vector<std::shared_ptr<OptimizeBaseItem>> items();
-
-private:
-	void ensureLoaded();
-
-	std::vector<std::shared_ptr<OptimizeBaseItem>> _items;
-};
-
-#endif // OPTIMIZEMANAGER_H
+std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeGroupItem::items()
+{
+	if (_items.size() == 0) {
+		loadItems();
+	}
+	return _items;
+}

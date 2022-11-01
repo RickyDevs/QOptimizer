@@ -20,8 +20,15 @@
 
 #include "optimizebaseitem.h"
 
-OptimizeBaseItem::OptimizeBaseItem()
+OptimizeBaseItem::OptimizeBaseItem(const char* identifier)
 {
+	Q_ASSERT(identifier != nullptr);
+	_identifier = identifier;
+}
+
+QString OptimizeBaseItem::identifier()
+{
+	QString::fromLocal8Bit(_identifier);
 }
 
 void OptimizeBaseItem::activate()
@@ -68,4 +75,10 @@ QString OptimizeBaseItem::profiles()
 void OptimizeBaseItem::checkOriginalStateImpl()
 {
 	Q_ASSERT(false);
+}
+
+std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeBaseItem::items()
+{
+	static std::vector<std::shared_ptr<OptimizeBaseItem>> emptyVector;
+	return emptyVector;
 }

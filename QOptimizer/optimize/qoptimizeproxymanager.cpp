@@ -23,7 +23,7 @@
 QOptimizeProxyManager::QOptimizeProxyManager(QObject *parent)
 	: QObject(parent)
 {
-
+	_optimizeManager.reset(new OptimizeManager());
 }
 
 /*
@@ -60,7 +60,19 @@ QList<QObject*> QOptimizeProxyManager::query()
 
 	QList<QObject*> list;
 
-	list.append(new QOptimizeProxyItem(this));
+	auto result =_optimizeManager->items();
+
+	//Q_ASSERT(result.size() == 1);
+
+	for (std::shared_ptr<OptimizeBaseItem>& item : result) {
+		auto proxyItem = new QOptimizeProxyItem(item, this);
+
+		for (std::shared_ptr<OptimizeBaseItem>& child : item->items()) {
+			proxyItem->addProxyItem(new QOptimizeProxyItem(child, this));
+		}
+
+		list.append(proxyItem);
+	}
 
 	return list;
 }
