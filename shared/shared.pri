@@ -34,7 +34,8 @@ HEADERS += \
     $$PWD/registry.h \
     $$PWD/qtglobalmutex.h \
     $$PWD/errorlogger.h \
-    $$PWD/jsonconvert.h
+    $$PWD/jsonconvert.h \
+    $$PWD/tagshelper.h
     
 
 contains( qo_shared, wbem ) {

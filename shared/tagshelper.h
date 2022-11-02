@@ -18,29 +18,22 @@
 **
 ****************************************************************************/
 
-#ifndef QOPTIMIZEPROXYMANAGER_H
-#define QOPTIMIZEPROXYMANAGER_H
+#ifndef TAGSHELPER_H
+#define TAGSHELPER_H
 
-#include <QObject>
-#include <QVariant>
-#include "qoptimizeproxyitem.h"
-#include "optimizemanager.h"
+#define TAGS1(k0)         k0
+#define TAGS2(k0, k1)     k0 " " k1
+#define TAGS3(k0, k1, k2) k0 " " k1 " " k2
+
+#define HEADER_TAG(k0)    k0 "_HEADER"
+#define ITEM_TAG(k0)      k0 "_ITEM"
 
 
-class QOptimizeProxyManager : public QObject
-{
-	Q_OBJECT
-public:
-	explicit QOptimizeProxyManager(QObject *parent = 0);
-	~QOptimizeProxyManager() {}
+#define k_tagNetwork     "NETWORK"
+#define k_tagDiskDrive   "DRIVE"
+#define k_tagWindows     "WINDOWS"
 
-	Q_INVOKABLE QList<QObject*> query(const QVariantMap& queryMap);
 
-//signals:
 
-//public slots:
-private:
-	std::unique_ptr<OptimizeManager> _optimizeManager;
-};
 
-#endif // QOPTIMIZEPROXYMANAGER_H
+#endif // TAGSHELPER_H

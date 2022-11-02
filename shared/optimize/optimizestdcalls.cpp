@@ -21,7 +21,7 @@
 #include "optimizestdcalls.h"
 
 OptimizeStdCalls::OptimizeStdCalls(const char* identifier)
-	: OptimizeBaseItem(identifier), _name(nullptr), _description(nullptr)
+	: OptimizeBaseItem(identifier), _name(nullptr), _description(nullptr), _tags(nullptr)
 {
 }
 
@@ -38,4 +38,9 @@ QString OptimizeStdCalls::name()
 QString OptimizeStdCalls::description()
 {
 	return QString::fromLatin1(_description);
+}
+
+QString OptimizeStdCalls::tags() const
+{
+	return QString::fromLatin1(_tags);
 }

@@ -20,6 +20,7 @@
 
 #include "performancetweaks.h"
 #include "optimizestdcalls.h"
+#include "tagshelper.h"
 
 PerformanceTweaks::PerformanceTweaks()
 {
@@ -36,29 +37,37 @@ QString PerformanceTweaks::description()
 	return QString::fromLatin1("Performance Tweaks description");
 }
 
+#define concat(first, second) first " " second
 
 void PerformanceTweaks::loadItems()
 {
 	//Q_ASSERT(false);
+
+	// Builder class ??
+
 	auto xxx = std::make_shared<OptimizeStdCalls>("AutoCompleteRunDialog");
 	xxx->_name = "Enable auto-complete in Run Dialog";
 	xxx->_description = "";
+//	xxx->_tags = TAGS1(tags::k_windows);
 	_items.push_back(xxx);
 
 	xxx = std::make_shared<OptimizeStdCalls>("DumpFileSize");
 	xxx->_name = "Reduce dump file size";
 	xxx->_description = "TODO: Disk Drives";
+	xxx->_tags = TAGS1(k_tagDiskDrive);
 	_items.push_back(xxx);
 
 
 	xxx = std::make_shared<OptimizeStdCalls>("RemoteAssistance");
 	xxx->_name = "Disable Remote Assistance";
 	xxx->_description = "TODO: Network stuff";
+	xxx->_tags = TAGS1(k_tagNetwork);
 	_items.push_back(xxx);
 
 	xxx = std::make_shared<OptimizeStdCalls>("ShakingAnimation");
 	xxx->_name = "Disable shaking to minimize";
 	xxx->_description = "";
+//	xxx->_tags = TAGS1(tags::k_windows);
 	_items.push_back(xxx);
 
 	// SuperFetch -> memory

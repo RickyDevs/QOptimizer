@@ -43,8 +43,8 @@ public:
 
 	virtual QString name();
 	virtual QString description();
-	virtual QString tags();
-	virtual QString profiles();
+	virtual QString tags() const;
+	virtual QString profiles() const;
 
 	virtual std::vector<std::shared_ptr<OptimizeBaseItem>> items();
 

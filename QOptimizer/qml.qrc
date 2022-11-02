@@ -4,9 +4,10 @@
         <file>qml/main.qml</file>
         <file>qml/Page1.qml</file>
         <file>qml/controls/ToggleButton.qml</file>
-        <file>qml/js/models.js</file>
         <file>qml/page1/MainTreeView.qml</file>
         <file>qml/page1/MainPanelView.qml</file>
         <file>qml/controls/OptimizeItem.qml</file>
+        <file>qml/controls/DetailItem.qml</file>
+        <file>qml/js/page1.js</file>
     </qresource>
 </RCC>

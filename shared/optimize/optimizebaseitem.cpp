@@ -62,12 +62,12 @@ QString OptimizeBaseItem::description()
 	return "";
 }
 
-QString OptimizeBaseItem::tags()
+QString OptimizeBaseItem::tags() const
 {
 	return "";
 }
 
-QString OptimizeBaseItem::profiles()
+QString OptimizeBaseItem::profiles() const
 {
 	return "";
 }

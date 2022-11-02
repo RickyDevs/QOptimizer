@@ -20,60 +20,51 @@
 
 #include "qoptimizeproxymanager.h"
 
+bool match(OptimizeBaseItem& item, const QVariantMap& queryMap)
+{
+	bool found = false;
+	QMapIterator<QString, QVariant> it(queryMap);
+	while (it.hasNext()) {
+		it.next();
+		if (it.key() == "tag") {
+			found = item.tags().split(' ', QString::SkipEmptyParts).contains(it.value().toString());
+		}
+	}
+	if (!found) {
+		for (std::shared_ptr<OptimizeBaseItem>& child : item.items()) {
+			if (match(*child, queryMap)) {
+				return true;
+			}
+		}
+	}
+
+	return found;
+}
+
 QOptimizeProxyManager::QOptimizeProxyManager(QObject *parent)
 	: QObject(parent)
 {
 	_optimizeManager.reset(new OptimizeManager());
 }
 
-/*
-QVariantList QOptimizeProxyManager::query()
+QList<QObject*> QOptimizeProxyManager::query(const QVariantMap& queryMap)
 {
-	printf("TODO:QOptimizeProxyManager::query ");
-
-	QVariantList list;
-
-	list.append(QVariant());
-
-	return list;
-}
-*/
-
-/*
-QList<QOptimizeProxyItem*> QOptimizeProxyManager::query()
-{
-	printf("TODO:QOptimizeProxyManager::query ");
-
-	QList<QOptimizeProxyItem*> list;
-
-	list.append(new QOptimizeProxyItem(this));
-
-	return list;
-}
-*/
-
-
-
-QList<QObject*> QOptimizeProxyManager::query()
-{
-	printf("TODO:QOptimizeProxyManager::query \n");
-
 	QList<QObject*> list;
-
 	auto result =_optimizeManager->items();
-
-	//Q_ASSERT(result.size() == 1);
-
 	for (std::shared_ptr<OptimizeBaseItem>& item : result) {
+		if (!match(*item, queryMap)) {
+			continue;
+		}
 		auto proxyItem = new QOptimizeProxyItem(item, this);
 
 		for (std::shared_ptr<OptimizeBaseItem>& child : item->items()) {
+			if (!match(*child, queryMap)) {
+				continue;
+			}
 			proxyItem->addProxyItem(new QOptimizeProxyItem(child, this));
 		}
-
 		list.append(proxyItem);
 	}
-
 	return list;
 }
 

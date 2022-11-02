@@ -21,8 +21,9 @@
 #include "mainmodel.h"
 
 #include "qwbemservices.h"
+#include "tagshelper.h"
 
-QVariantMap makeUiEntry(const QString& name, const QString& icon, const QString& objType) {
+QVariantMap makeUiEntry(const QString& name, const QString& icon, const char* objType) {
 	QVariantMap map;
 	map["DisplayName"] = QVariant(name);
 	map["Icon"] = QVariant(icon);
@@ -92,18 +93,18 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 					 "GRAPHIC_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Disk Drives", "qrc://disk_drive.png", "DRIVE_HEADER"),
+				 makeUiEntry("Disk Drives", "qrc://disk_drive.png", HEADER_TAG(k_tagDiskDrive)),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_DiskDrive",
 					 {"Model", "BytesPerSector", "FirmwareRevision", "MediaType", "Size"},
 					 "DRIVE_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Network Adapters", "qrc://network_adapters.png", "PROCESSOR_HEADER"),
+				 makeUiEntry("Network Adapters", "qrc://network_adapters.png", HEADER_TAG(k_tagNetwork)),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_NetworkAdapter",
 					 {"AdapterType", "Manufacturer", "ProductName", "PhysicalAdapter", "MacAddress", "ServiceName"},
-					 "PROCESSOR_HEADER")
+					 "NETWORK_ITEM")
 				 });
 	addModelData(0,
 				 makeUiEntry("BIOS", "qrc://bios.png", "PROCESSOR_HEADER"),
@@ -141,7 +142,7 @@ int MainModel::rowCount(const QModelIndex& parent) const
 		return _modelData.at(0).childs.size();
 	}
 	int idx = parent.internalId();
-	Q_ASSERT(_modelData.size() > idx);
+	Q_ASSERT(_modelData.size() > (size_t)idx);
 	return _modelData.at(idx).childs.size();
 }
 
@@ -184,9 +185,6 @@ QModelIndex MainModel::index(int row, int column, const QModelIndex& parent) con
 
 
 QModelIndex MainModel::parent(const QModelIndex& child) const {
-	/*if (child.isValid()) {
-		return child.parent();
-	}*/
 	return QModelIndex();
 }
 

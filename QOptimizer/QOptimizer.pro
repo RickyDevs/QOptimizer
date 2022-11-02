@@ -37,7 +37,7 @@ OTHER_FILES += \
     qml/page1/MainPanelView.qml \
     qml/page1/MainTreeView.qml \
     qml/pageX/ProfileActivatePage.qml \
-    qml/js/models.js
+    qml/js/page1.js
 
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
