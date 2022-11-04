@@ -1,5 +1,7 @@
 
 
+///.import "bytesize.js" as BS
+
 function countModelListItems(modelList: Array<any>) {
     var count = modelList.length;
     for (var x in modelList) {
@@ -9,7 +11,7 @@ function countModelListItems(modelList: Array<any>) {
 }
 
 function fillOptimizeItemList(wbemObj: WbemObject, optimizeItemList: Qt.Repeater) {
-    var type = tagTypeFrombemObj(wbemObj);
+    var type = tagTypeFromWbemObj(wbemObj);
     var modelList = optimizeManager.query({tag: type});
     //console.log("list.lenght", modelList.length);
     optimizeItemList.model = countModelListItems(modelList)
@@ -36,7 +38,7 @@ function fillOptimizeItemList(wbemObj: WbemObject, optimizeItemList: Qt.Repeater
 }
 
 function fillDetailItemList(wbemObj: WbemObject, detailItemList: Qt.Repeater) {
-    var skipFields = ['Type', 'DisplayName'];
+    var skipFields = ['Type', 'DisplayName', 'ByteSizeMask'];
     var fields = Object.keys(wbemObj).filter((i: string) => {
         return skipFields.indexOf(i) < 0;
     });
@@ -44,13 +46,24 @@ function fillDetailItemList(wbemObj: WbemObject, detailItemList: Qt.Repeater) {
     detailItemList.model = fields.length;
     
     var idx = 0;
+    var byteSizeMask = wbemObj['ByteSizeMask'] || '';
+
     for (var k in wbemObj) {
         if (skipFields.indexOf(k) >= 0) {
             continue;
         }
+        var v = wbemObj[k];
+        if (byteSizeMask.indexOf(k + "=") >= 0) {
+            if (byteSizeMask.indexOf(k + "=k;") >= 0) {
+                v = BS.ByteSize.fromKiloBytes(v).toString();
+            } else if  (byteSizeMask.indexOf(k + "=b;") >= 0) {
+                v = BS.ByteSize.fromBytes(v).toString();
+            }
+        }
+
         detailItemList.itemAt(idx).model = {
             name: k,
-            info: wbemObj[k]
+            info: v
         }
         idx++;
     }
@@ -64,7 +77,7 @@ function isWbemItemType(wbemObj: WbemObject) {
     return wbemObj.Type.indexOf("ITEM") > 0;
 }
 
-function tagTypeFrombemObj(wbemObj: WbemObject) {
+function tagTypeFromWbemObj(wbemObj: WbemObject) {
     var type = wbemObj.Type;
     return type.substr(0, type.indexOf('_'));
 }

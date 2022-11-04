@@ -37,6 +37,7 @@ struct Task {
 	QString query;
 	QStringList fields;
 	QString objType;
+	QString byteSizeMask;
 
 };
 

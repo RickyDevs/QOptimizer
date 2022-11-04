@@ -9,5 +9,6 @@
         <file>qml/controls/OptimizeItem.qml</file>
         <file>qml/controls/DetailItem.qml</file>
         <file>qml/js/page1.js</file>
+        <file>qml/js/bytesize.js</file>
     </qresource>
 </RCC>

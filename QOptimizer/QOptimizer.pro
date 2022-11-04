@@ -32,6 +32,7 @@ RESOURCES += qml.qrc
 OTHER_FILES += \
     qml/main.qml \
     qml/Page1.qml \
+    qml/controls/DetailItem.qml \
     qml/controls/OptimizeItem.qml \
     qml/controls/ToggleButton.qml \
     qml/page1/MainPanelView.qml \

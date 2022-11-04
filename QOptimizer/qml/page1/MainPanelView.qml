@@ -34,7 +34,7 @@ Item {
             detailsItemList.model = 0;
             Page1JS.fillOptimizeItemList(obj, optimizeItemList)
         } else if (Page1JS.isWbemItemType(obj)) {
-            todo.text = "TODO: show list of items"
+            todo.text = ""
             optimizeItemList.model = 0;
             Page1JS.fillDetailItemList(obj, detailsItemList)
         } else {
@@ -80,32 +80,41 @@ Item {
             }
         }
 
-        Column {
-            anchors.top: header.bottom
-            anchors.topMargin: 6
-            x: 0
-            Repeater {
-                id: optimizeItemList
-                delegate: Component {
-                    OptimizeItem {
+        ScrollView {
 
+            anchors.top: header.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.topMargin: 6
+
+            Column {
+                y: 0
+                x: 0
+                Repeater {
+                    id: optimizeItemList
+                    delegate: Component {
+                        OptimizeItem {
+
+                        }
                     }
                 }
             }
-        }
-        Column {
-            anchors.top: header.bottom
-            anchors.topMargin: 6
-            x: 0
-            Repeater {
-                id: detailsItemList
-                delegate: Component {
-                    DetailItem {
+            Column {
+                y: 0
+                x: 0
+                Repeater {
+                    id: detailsItemList
+                    delegate: Component {
+                        DetailItem {
 
+                        }
                     }
                 }
             }
-        }
+        } // ScrollView
+
+
     }
 
 }

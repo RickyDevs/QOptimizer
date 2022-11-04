@@ -31,12 +31,13 @@ QVariantMap makeUiEntry(const QString& name, const QString& icon, const char* ob
 	return map;
 }
 
-Task makeWbemTask(const QString& query, const QStringList& fields, const QString& objType) {
+Task makeWbemTask(const QString& query, const QStringList& fields, const QString& objType, const QString& byteSizeMask = "") {
 	Task task;
 	task.type = TaskType::Wbem;
 	task.query = query;
 	task.fields = fields;
 	task.objType = objType;
+	task.byteSizeMask = byteSizeMask;
 	return task;
 }
 
@@ -68,7 +69,8 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 				 {
 					 makeWbemTask("SELECT * FROM Win32_Processor",
 					 {"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores"},
-					 "PROCESSOR_ITEM")
+					 "PROCESSOR_ITEM",
+					 "L2CacheSize=k;L3CacheSize=k;")
 				 });
 	addModelData(0,
 				 makeUiEntry("Memory", "qrc://memory.png", "MEMORY_HEADER"),
@@ -76,7 +78,8 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 					 // Testar em Win7 ou Virtual Box
 					 makeWbemTask("SELECT * FROM Win32_PhysicalMemory",
 					 {"Manufacturer", "BankLabel", "Capacity", "Speed", "MemoryType", "FormFactor"},
-					 "MEMORY_ITEM")
+					 "MEMORY_ITEM",
+					 "Capacity=b;")
 				 });
 	addModelData(0,
 				 makeUiEntry("Motherboard", "qrc://motherboard.png", "BOARD_HEADER"),
@@ -86,18 +89,19 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 					 "BOARD_ITEM")
 				 });
 	addModelData(0,
-				 makeUiEntry("Graphics", "qrc://graphics.png", "PROCESSOR_HEADER"),
+				 makeUiEntry("Graphics", "qrc://graphics.png", HEADER_TAG(k_tagGraphics)),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_VideoController",
 					 {"Name", "AdapterRAM", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate", "AdapterDACType", "VideoMemoryType"},
-					 "GRAPHIC_ITEM")
+					 ITEM_TAG(k_tagGraphics))
 				 });
 	addModelData(0,
 				 makeUiEntry("Disk Drives", "qrc://disk_drive.png", HEADER_TAG(k_tagDiskDrive)),
 				 {
 					 makeWbemTask("SELECT * FROM Win32_DiskDrive",
 					 {"Model", "BytesPerSector", "FirmwareRevision", "MediaType", "Size"},
-					 "DRIVE_ITEM")
+					 ITEM_TAG(k_tagDiskDrive),
+					 "Size=b;")
 				 });
 	addModelData(0,
 				 makeUiEntry("Network Adapters", "qrc://network_adapters.png", HEADER_TAG(k_tagNetwork)),
@@ -224,6 +228,10 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 		for (QVariant v : queryResult.resultList) {
 			QVariantMap map = v.toMap();
 			map["Type"] = QVariant(_taskQueue[queryResult.resultData].objType);
+			QString byteSizeMask = _taskQueue[queryResult.resultData].byteSizeMask;
+			if (byteSizeMask != "") {
+				map["ByteSizeMask"] = QVariant(byteSizeMask);
+			}
 			QString displayNameStr = displayName(map);
 			// TODO "Unknown" display name?
 			if (displayNameStr != "") {

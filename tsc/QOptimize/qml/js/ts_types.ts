@@ -25,3 +25,7 @@ interface WbemObject {
     Type: string;
     DisplayName: string;
 }
+
+namespace BS {
+    export var ByteSize: IByteSize;
+}

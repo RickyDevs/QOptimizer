@@ -34,9 +34,6 @@ import QtQuick.Particles 2.0
 
 */
 
-
-
-
 ApplicationWindow {
     visible: true
     width: 780
@@ -109,9 +106,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        //var x = ;
-        //console.log(x, Models.mainModelData);
-
         mainPage.model = program.createModel('MainModel');
     }
+
 }

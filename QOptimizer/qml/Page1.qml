@@ -34,8 +34,6 @@ Item {
         width: 320
         height: parent.height
 
-
-
         //onActivated: {
         onClicked: {
             var obj = treeView.model.data(index, 258);
@@ -50,7 +48,5 @@ Item {
         anchors.fill: parent
         anchors.leftMargin: treeView.width
     }
-
 }
-
 

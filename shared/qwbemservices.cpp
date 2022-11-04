@@ -38,6 +38,26 @@ struct QWbemServicesPrivate {
 
 // ----
 
+QVariant variantToQVariant(const VARIANT* pVarValue) {
+
+	auto type = V_VT(pVarValue);
+	if (type == VT_I4) {
+		return V_INT(pVarValue);
+	}
+	if (type == VT_DECIMAL) {
+		_variant_t test(pVarValue);
+		return QVariant(static_cast<double>(test));
+	}
+	if (type == VT_BOOL) {
+		return QVariant(V_BOOL(pVarValue));
+	}
+	if (type == VT_BSTR) {
+		//printf("%s: %ls\n", _field.toStdString().c_str(), V_BSTR(&varName));
+		return QString::fromWCharArray(V_BSTR(pVarValue));
+	}
+	return QVariant();
+}
+
 class ResponseSink : public IWbemObjectSink
 {
 	LONG _lRef;
@@ -114,18 +134,9 @@ public:
 					//		" Error code = 0x", hRes);
 					return WBEM_E_FAILED;       // Program has failed.
 				}
-
 				QString fieldName = _fieldList[idx];
-				if (V_VT(&varValue) == VT_I4) {
-					//printf("%s: %d\n", _field.toStdString().c_str(), varName.lVal);
-					map[fieldName] = V_INT(&varValue);
-				} else if (V_VT(&varValue) == VT_BOOL) {
-					map[fieldName] = V_BOOL(&varValue);
-				} else {
-					//printf("%s: %ls\n", _field.toStdString().c_str(), V_BSTR(&varName));
-					map[fieldName] = QString::fromWCharArray(V_BSTR(&varValue));
+				map[fieldName] = variantToQVariant(&varValue);
 
-				}
 				VariantClear(&varValue);
 				idx++;
 			}

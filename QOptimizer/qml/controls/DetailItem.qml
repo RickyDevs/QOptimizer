@@ -12,13 +12,17 @@ Item {
 
     Label {
         id: name
+        height: 21
         anchors.verticalCenter: parent.verticalCenter
         x: 6
+        font.pixelSize: height * 0.65
     }
     Label {
         id: info
+        height: 21
         anchors.verticalCenter: parent.verticalCenter
-        x: 100
+        x: 120
+        font.pixelSize: height * 0.65
     }
 
     onModelChanged: {
