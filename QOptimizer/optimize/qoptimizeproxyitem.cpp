@@ -26,12 +26,11 @@ QOptimizeProxyItem::QOptimizeProxyItem(std::shared_ptr<OptimizeBaseItem> item, Q
 
 }
 
-
 void QOptimizeProxyItem::activate()
 {
-	printf("QOptimizeProxyItem::activate()\n");
 	if (_item) {
 		_item->activate();
+		emit activeChanged();
 	}
 }
 
@@ -39,6 +38,7 @@ void QOptimizeProxyItem::deactivate()
 {
 	if (_item) {
 		_item->deactivate();
+		emit activeChanged();
 	}
 }
 
@@ -58,6 +58,13 @@ bool QOptimizeProxyItem::isActiveFromOrigin()
 	return false;
 }
 
+QString QOptimizeProxyItem::identifier()
+{
+	if (_item) {
+		return _item->identifier();
+	}
+	return "";
+}
 
 QString QOptimizeProxyItem::name()
 {

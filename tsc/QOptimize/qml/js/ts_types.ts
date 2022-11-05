@@ -5,6 +5,7 @@ interface QOtimizeManagerSearchMap {
 }
 
 interface QOptimizeItem {
+    identifier: string;
     name: string;
 
     childItems: Array<QOptimizeItem>;
@@ -28,4 +29,14 @@ interface WbemObject {
 
 namespace BS {
     export var ByteSize: IByteSize;
+}
+
+//--------
+
+// OptimizeItem.qml
+interface QmlOptimizeItem { 
+    model: QOptimizeItem;
+    indent: number;
+    activateOptimize(identifier: string): void;
+    deactivateOptimize(identifier: string): void;
 }

@@ -31,7 +31,6 @@ Item {
         }
     }
 
-
     Item {
         anchors.fill: parent
         anchors.topMargin: 8
@@ -60,19 +59,74 @@ Item {
             color: myPalette.shadow
         }
         ToggleButton {
+            property bool _activationNeedsConnect: true;
             id: toggleButton
+            manualSwitchMode: true
             width: 50
             height: 26
             anchors.top: parent.top
             anchors.right: parent.right
+
+            onActivating: {
+                console.log('onActivating', model.identifier);
+                //root.activateOptimize(model.identifier);
+
+                if ( _activationNeedsConnect) {
+                    _activationNeedsConnect = false;
+                    model.activeChanged.connect(onActiveChanged)
+                }
+
+                delayedButtonAction.performActivation = true
+                delayedButtonAction.start()
+                // TODO autoCancelAction.start();
+            }
+
+            onDeactivating: {
+                console.log('onDeactivating', model.identifier);
+                //root.deactivateOptimize(model.identifier);
+
+                delayedButtonAction.performActivation = false
+                delayedButtonAction.start()
+            }
+
+            function onActiveChanged() {
+                console.log('onActivationChanged response');
+                autoCancelAction.stop();
+                finishSwitch()
+            }
+
+            Timer {
+                property bool performActivation
+
+                id: delayedButtonAction
+                interval: 55
+                running: false
+                repeat: false
+                onTriggered: {
+                    if (performActivation) {
+                        model.activate();
+                    } else {
+                        model.deactivate();
+                    }
+                }
+            }
+
+            Timer {
+                id: autoCancelAction
+                interval: 1800
+                running: false
+                repeat: false
+                onTriggered: {
+                    toggleButton.finishSwitch(true);
+                }
+            }
         }
     }
-
-
 
     onModelChanged: {
         name.text = model.name;
         description.text = model.description;
-
+        toggleButton._activationNeedsConnect = true;
+        toggleButton.state = model.isActive() ? "on" : "off";
     }
 }

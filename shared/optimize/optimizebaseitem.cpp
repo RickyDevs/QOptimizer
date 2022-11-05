@@ -19,6 +19,7 @@
 ****************************************************************************/
 
 #include "optimizebaseitem.h"
+#include <QThread>
 
 OptimizeBaseItem::OptimizeBaseItem(const char* identifier)
 {
@@ -28,17 +29,20 @@ OptimizeBaseItem::OptimizeBaseItem(const char* identifier)
 
 QString OptimizeBaseItem::identifier()
 {
-	QString::fromLocal8Bit(_identifier);
+	return QString::fromLocal8Bit(_identifier);
 }
 
 void OptimizeBaseItem::activate()
 {
+	printf("OptimizeBaseItem::Activate\n");
+	QThread::msleep(100);
 
 }
 
 void OptimizeBaseItem::deactivate()
 {
-
+	printf("OptimizeBaseItem::deactivate\n");
+	QThread::msleep(50);
 }
 
 bool OptimizeBaseItem::isActive()

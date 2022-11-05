@@ -16,7 +16,8 @@ declare namespace Qt {
 
     export interface Repeater {
         model: number | ListModel;
-        itemAt(index: number): Object | any
+        itemAt(index: number): Object | any;
+        count: number;
     }
 
     export interface Component {

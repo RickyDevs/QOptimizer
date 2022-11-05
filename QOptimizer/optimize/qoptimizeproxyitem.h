@@ -31,14 +31,15 @@ class QOptimizeProxyItem : public QObject
 public:
 	explicit QOptimizeProxyItem(std::shared_ptr<OptimizeBaseItem> item, QObject* parent);
 
-	Q_PROPERTY(bool isActive READ isActive NOTIFY activateChange)
-	Q_PROPERTY(bool isActiveFromOrigin READ isActiveFromOrigin CONSTANT)
+	Q_PROPERTY(QString identifier READ identifier CONSTANT)
 	Q_PROPERTY(QString name READ name CONSTANT)
 	Q_PROPERTY(QString description READ description CONSTANT)
 	Q_PROPERTY(QString tags READ tags CONSTANT)
 	Q_PROPERTY(QString profiles READ profiles CONSTANT)
 	Q_PROPERTY(QList<QObject*> childItems READ childItems CONSTANT)
 
+	Q_INVOKABLE bool isActive();
+	Q_INVOKABLE bool isActiveFromOrigin();
 	Q_INVOKABLE void activate();
 	Q_INVOKABLE void deactivate();
 
@@ -46,12 +47,10 @@ public:
 	void addProxyItem(QOptimizeProxyItem* item);
 
 signals:
-	void activateChange();
+	void activeChanged();
 
 private:
-	bool isActive();
-	bool isActiveFromOrigin();
-
+	QString identifier();
 	QString name();
 	QString description();
 	QString tags();
