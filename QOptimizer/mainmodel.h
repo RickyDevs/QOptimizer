@@ -32,12 +32,17 @@ enum class TaskType {
 	Operations
 };
 
+enum class TaskAction {
+	Append,
+	UpdateChilds
+};
+
 struct Task {
 	TaskType type;
+	TaskAction action;
 	QString query;
 	QStringList fields;
-	QString objType;
-	QString byteSizeMask;
+	QVariantMap defaultDataMap;
 
 };
 
@@ -74,12 +79,16 @@ public:
 
 	QHash<int, QByteArray> roleNames() const override;
 
+	Q_INVOKABLE void checkForPendingUpdates(const QModelIndex &index);
+
 public slots:
 	void wbemResult(const QWbemQueryResult& queryResult);
 
 private:
 	void addModelData(int parentId, const QVariantMap& map, const std::vector<Task>& taskList);
-	void processTaskForItem(int itemId);
+	void processTaskForItem(int itemId, TaskAction actionFilter);
+	void wbemResultAppend(const QWbemQueryResult& queryResult);
+	void wbemResultUpdateChilds(const QWbemQueryResult& queryResult);
 
 	std::vector<MainModelItem> _modelData;
 	std::map<int, Task> _taskQueue;

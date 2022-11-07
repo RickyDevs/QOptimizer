@@ -26,20 +26,48 @@
 QVariantMap makeUiEntry(const QString& name, const QString& icon, const char* objType) {
 	QVariantMap map;
 	map["DisplayName"] = QVariant(name);
-	map["Icon"] = QVariant(icon);
+	map["DisplayIcon"] = QVariant(icon);
 	map["Type"] = QVariant(objType);
 	return map;
 }
 
-Task makeWbemTask(const QString& query, const QStringList& fields, const QString& objType, const QString& byteSizeMask = "") {
-	Task task;
-	task.type = TaskType::Wbem;
-	task.query = query;
-	task.fields = fields;
-	task.objType = objType;
-	task.byteSizeMask = byteSizeMask;
-	return task;
-}
+class WbemTaskBuilder
+{
+public:
+	WbemTaskBuilder(const QString& query, const QStringList& fields) {
+		_task.type = TaskType::Wbem;
+		_task.action = TaskAction::UpdateChilds;
+		_task.query = query;
+		_task.fields = fields;
+		_task.defaultDataMap.clear();
+	}
+	operator Task() const { return std::move(_task); }
+
+	WbemTaskBuilder& objType(const QString& objType) {
+		// Swap to append new elements because updates shouldn't define Type
+		_task.action = TaskAction::Append;
+		_task.defaultDataMap["Type"] = QVariant(objType);
+		return *this;
+	}
+	WbemTaskBuilder& icon(const QString& icon) {
+		_task.defaultDataMap["DisplayIcon"] = QVariant(icon);
+		return *this;
+	}
+	WbemTaskBuilder& byteSizeMask(const QString& byteSizeMask) {
+		_task.defaultDataMap["ByteSizeMask"] = QVariant(byteSizeMask);
+		return *this;
+	}
+	WbemTaskBuilder& priority(int priority) {
+		Q_UNUSED(priority)
+		// TODO.. maybe new name...
+		//actions: mandatory? (must run at startup),
+		//         secundary?? (on demand by user clicking on it, e.g fetching other fields)
+		// ou TaskType::WbemCreate; + TaskType::WbemUpdate;
+		return *this;
+	}
+private:
+	Task _task;
+};
 
 QString displayName(const QVariantMap& map) {
 	QString type = map["Type"].toString();
@@ -49,7 +77,7 @@ QString displayName(const QVariantMap& map) {
 	if (type == "BOARD_ITEM") {
 		return map["Manufacturer"].toString();
 	}
-	if (type == "DRIVE_ITEM") {
+	if (type == ITEM_TAG(k_tagDiskDrive)) {
 		return map["Model"].toString();
 	}
 	return map["Name"].toString();
@@ -65,60 +93,67 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 	_modelData.emplace_back(root);
 
 	addModelData(0,
-				 makeUiEntry("Processors", "qrc://processor.png", "PROCESSOR_HEADER"),
+				 makeUiEntry("Processors", "charcode:0xE950", HEADER_TAG(k_tagProcessor)),
 				 {
-					 makeWbemTask("SELECT * FROM Win32_Processor",
-					 {"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores"},
-					 "PROCESSOR_ITEM",
-					 "L2CacheSize=k;L3CacheSize=k;")
+					WbemTaskBuilder("SELECT * FROM Win32_Processor",
+						{"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores", "NumberOfLogicalProcessors", "Description", "Revision", "VirtualizationFirmwareEnabled"})
+					.objType(ITEM_TAG(k_tagProcessor))
+					.icon("charcode:0xE950")
+					.byteSizeMask("L2CacheSize=k;L3CacheSize=k;")
 				 });
 	addModelData(0,
-				 makeUiEntry("Memory", "qrc://memory.png", "MEMORY_HEADER"),
+				 makeUiEntry("Memory", "qrc://memory.png", HEADER_TAG(k_tagMemory)),
 				 {
-					 // Testar em Win7 ou Virtual Box
-					 makeWbemTask("SELECT * FROM Win32_PhysicalMemory",
-					 {"Manufacturer", "BankLabel", "Capacity", "Speed", "MemoryType", "FormFactor"},
-					 "MEMORY_ITEM",
-					 "Capacity=b;")
+					// Testar em Win7 ou Virtual Box
+					WbemTaskBuilder("SELECT * FROM Win32_PhysicalMemory",
+						{"Manufacturer", "BankLabel", "Capacity", "Speed", "MemoryType", "FormFactor"})
+					.objType(ITEM_TAG(k_tagMemory))
+					.byteSizeMask("Capacity=b;")
 				 });
 	addModelData(0,
-				 makeUiEntry("Motherboard", "qrc://motherboard.png", "BOARD_HEADER"),
+				 makeUiEntry("Motherboard", "charcode:0xE964", HEADER_TAG(k_tagMotherboard)),
 				 {
-					 makeWbemTask("SELECT * FROM Win32_BaseBoard",
-					 {"Model", "Manufacturer", "Product", "Version"},
-					 "BOARD_ITEM")
+					 WbemTaskBuilder("SELECT * FROM Win32_BaseBoard",
+						{"Model", "Manufacturer", "Product", "Version"})
+					 .objType(ITEM_TAG(k_tagMotherboard))
+					 .icon("charcode:0xE964")
 				 });
 	addModelData(0,
-				 makeUiEntry("Graphics", "qrc://graphics.png", HEADER_TAG(k_tagGraphics)),
+				 makeUiEntry("Graphics", "charcode:0xF211", HEADER_TAG(k_tagGraphics)),
 				 {
-					 makeWbemTask("SELECT * FROM Win32_VideoController",
-					 {"Name", "AdapterRAM", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate", "AdapterDACType", "VideoMemoryType"},
-					 ITEM_TAG(k_tagGraphics))
+					 WbemTaskBuilder("SELECT * FROM Win32_VideoController",
+						{"Name", "AdapterRAM", "CurrentHorizontalResolution", "CurrentVerticalResolution", "CurrentRefreshRate", "AdapterDACType", "VideoMemoryType"})
+					 .objType(ITEM_TAG(k_tagGraphics))
+					 .icon("charcode:0xF211")
 				 });
 	addModelData(0,
-				 makeUiEntry("Disk Drives", "qrc://disk_drive.png", HEADER_TAG(k_tagDiskDrive)),
+				 makeUiEntry("Disk Drives", "charcode:0xEDA2", HEADER_TAG(k_tagDiskDrive)),
 				 {
-					 makeWbemTask("SELECT * FROM Win32_DiskDrive",
-					 {"Model", "BytesPerSector", "FirmwareRevision", "MediaType", "Size"},
-					 ITEM_TAG(k_tagDiskDrive),
-					 "Size=b;")
+					 WbemTaskBuilder("SELECT * FROM Win32_DiskDrive",
+						{"Model", "BytesPerSector", "FirmwareRevision", "MediaType", "Size"})
+					 .objType(ITEM_TAG(k_tagDiskDrive))
+					 .icon("charcode:0xEDA2")
+					 .byteSizeMask("Size=b;")
 				 });
 	addModelData(0,
-				 makeUiEntry("Network Adapters", "qrc://network_adapters.png", HEADER_TAG(k_tagNetwork)),
+				 makeUiEntry("Network Adapters", "charcode:0xEDA3", HEADER_TAG(k_tagNetwork)),
 				 {
-					 makeWbemTask("SELECT * FROM Win32_NetworkAdapter",
-					 {"AdapterType", "Manufacturer", "ProductName", "PhysicalAdapter", "MacAddress", "ServiceName"},
-					 "NETWORK_ITEM")
-				 });
-	addModelData(0,
-				 makeUiEntry("BIOS", "qrc://bios.png", "PROCESSOR_HEADER"),
-				 {
-					 makeWbemTask("SELECT * FROM Win32_BIOS",
-					 {"Name", "Manufacturer", "Version", "BuildNumber"},
-					 "PROCESSOR_HEADER")
+					 WbemTaskBuilder("SELECT * FROM Win32_NetworkAdapter",
+						{"AdapterType", "Manufacturer", "ProductName", "PhysicalAdapter", "MacAddress", "ServiceName"})
+					 .objType(ITEM_TAG(k_tagNetwork))
+					 .icon("charcode:0xEDA3")
 				 });
 
-	//wbem->query("SELECT * FROM Win32_Processor", {"Name"}, 6969);
+	addModelData(0,
+				 makeUiEntry("BIOS", "charcode:0xE964", HEADER_TAG(k_tagBIOS)),
+				 {
+					 WbemTaskBuilder("SELECT * FROM Win32_BIOS",
+						{"Name", "Manufacturer", "Version", "BuildNumber"})
+					.objType(ITEM_TAG(k_tagBIOS))
+					.icon("charcode:0xE964"),
+					 WbemTaskBuilder("SELECT ReleaseDate FROM Win32_BIOS",
+						{"ReleaseDate"})
+				 });
 }
 
 
@@ -134,7 +169,7 @@ void MainModel::addModelData(int parentId, const QVariantMap& map, const std::ve
 	_modelData[parentId].childs.emplace_back(itemId);
 	_modelData.emplace_back(item);
 
-	processTaskForItem(itemId);
+	processTaskForItem(itemId, TaskAction::Append);
 }
 
 int MainModel::rowCount(const QModelIndex& parent) const
@@ -201,10 +236,24 @@ QHash<int, QByteArray> MainModel::roleNames() const {
 	return map;
 }
 
-void MainModel::processTaskForItem(int itemId) {
+void MainModel::checkForPendingUpdates(const QModelIndex &index)
+{
+	int itemId = index.internalId();
+	if (_taskQueue.find(itemId) != _taskQueue.cend()) {
+		return;
+	}
+	processTaskForItem(itemId, TaskAction::UpdateChilds);
+}
+
+void MainModel::processTaskForItem(int itemId, TaskAction actionFilter)
+{
 	auto& taskList = _modelData.at(itemId).taskList;
 	if (!taskList.empty()) {
 		Task task = taskList.front();
+		if (task.action != actionFilter) {
+			_taskQueue.erase(_taskQueue.find(itemId));
+			return;
+		}
 		taskList.erase(taskList.begin());
 		_taskQueue[itemId] = task;
 
@@ -221,23 +270,15 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 		printf("wbem query fail");
 		return;
 	}
-
-	int oldChildCount = _modelData.at(queryResult.resultData).childs.size();
+	int itemId = queryResult.resultData;
+	int oldChildCount = _modelData.at(itemId).childs.size();
+	const Task& task = _taskQueue[queryResult.resultData];
 
 	if (queryResult.resultList.size() > 0) {
-		for (QVariant v : queryResult.resultList) {
-			QVariantMap map = v.toMap();
-			map["Type"] = QVariant(_taskQueue[queryResult.resultData].objType);
-			QString byteSizeMask = _taskQueue[queryResult.resultData].byteSizeMask;
-			if (byteSizeMask != "") {
-				map["ByteSizeMask"] = QVariant(byteSizeMask);
-			}
-			QString displayNameStr = displayName(map);
-			// TODO "Unknown" display name?
-			if (displayNameStr != "") {
-				map["DisplayName"] = QVariant(displayNameStr);
-				addModelData(queryResult.resultData, map, {});
-			}
+		if (task.action == TaskAction::Append) {
+			wbemResultAppend(queryResult);
+		} else {
+			wbemResultUpdateChilds(queryResult);
 		}
 	}
 
@@ -246,6 +287,36 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 	if (oldChildCount != newChildCount) {
 		insertRows(oldChildCount, newChildCount - oldChildCount, createIndex(item.row, 0, queryResult.resultData));
 	}
+
+	processTaskForItem(itemId, task.action);
 }
 
 
+void MainModel::wbemResultAppend(const QWbemQueryResult& queryResult) {
+	for (QVariant v : queryResult.resultList) {
+		QVariantMap map = v.toMap();
+		//map["Type"] = QVariant(_taskQueue[queryResult.resultData].objType);
+		//QString byteSizeMask = _taskQueue[queryResult.resultData].byteSizeMask;
+		//if (byteSizeMask != "") {
+		//	map["ByteSizeMask"] = QVariant(byteSizeMask);
+		//}
+		map.unite(_taskQueue[queryResult.resultData].defaultDataMap);
+		QString displayNameStr = displayName(map);
+		// TODO "Unknown" display name?
+		if (displayNameStr != "") {
+			map["DisplayName"] = QVariant(displayNameStr);
+			addModelData(queryResult.resultData, map, {});
+		}
+	}
+}
+
+void MainModel::wbemResultUpdateChilds(const QWbemQueryResult& queryResult) {
+	int itemId = queryResult.resultData;
+	const auto& childs = _modelData.at(itemId).childs;
+	for (QVariant v : queryResult.resultList) {
+		QVariantMap map = v.toMap();
+		for (int childId : childs) {
+			_modelData.at(childId).dataMap.unite(map);
+		}
+	}
+}

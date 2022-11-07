@@ -10,6 +10,8 @@ Item {
 
     property var model;
 
+    SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
+
     Label {
         id: name
         height: 21
@@ -23,6 +25,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         x: 120
         font.pixelSize: height * 0.65
+        color: myPalette.shadow
     }
 
     onModelChanged: {

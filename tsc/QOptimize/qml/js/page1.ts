@@ -64,7 +64,7 @@ function findQmlOptimizeItem(identifier: string, optimizeItemList: Qt.Repeater):
 }
 
 function fillDetailItemList(wbemObj: WbemObject, detailItemList: Qt.Repeater) {
-    var skipFields = ['Type', 'DisplayName', 'ByteSizeMask'];
+    var skipFields = ['Type', 'DisplayName', 'DisplayIcon', 'ByteSizeMask'];
     var fields = Object.keys(wbemObj).filter((i: string) => {
         return skipFields.indexOf(i) < 0;
     });

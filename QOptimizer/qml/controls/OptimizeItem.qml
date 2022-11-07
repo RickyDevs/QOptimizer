@@ -63,7 +63,7 @@ Item {
             id: toggleButton
             manualSwitchMode: true
             width: 50
-            height: 26
+            height: root.indent == 0? 26 : 24
             anchors.top: parent.top
             anchors.right: parent.right
 

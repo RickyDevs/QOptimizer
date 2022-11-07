@@ -40,6 +40,7 @@ Item {
             //console.log(obj);
             panelView.showObject(obj)
             expand(index)
+            treeView.model.checkForPendingUpdates(index);
         }
     }
 

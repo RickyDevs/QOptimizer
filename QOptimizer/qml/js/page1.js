@@ -55,7 +55,7 @@ function findQmlOptimizeItem(identifier, optimizeItemList) {
     }
 }
 function fillDetailItemList(wbemObj, detailItemList) {
-    var skipFields = ['Type', 'DisplayName', 'ByteSizeMask'];
+    var skipFields = ['Type', 'DisplayName', 'DisplayIcon', 'ByteSizeMask'];
     var fields = Object.keys(wbemObj).filter(function (i) {
         return skipFields.indexOf(i) < 0;
     });

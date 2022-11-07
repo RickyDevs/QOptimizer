@@ -29,9 +29,13 @@
 #define ITEM_TAG(k0)      k0 "_ITEM"
 
 
+#define k_tagBIOS        "BIOS"
 #define k_tagDiskDrive   "DRIVE"
 #define k_tagGraphics    "GRAPHIC"
+#define k_tagMemory      "MEMORY"
+#define k_tagMotherboard "BOARD"
 #define k_tagNetwork     "NETWORK"
+#define k_tagProcessor   "PROCESSOR"
 #define k_tagWindows     "WINDOWS"
 
 

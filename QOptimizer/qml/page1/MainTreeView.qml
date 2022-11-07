@@ -74,6 +74,18 @@ TreeView {
         delegate: Component {
             Item {
 //                implicitHeight: 130
+                function getIcon(image) {
+                    var ico = styleData.value.DisplayIcon;
+                    if (image) {
+                        return String.fromCharCode(0xED51); // TODO
+                    }
+                    if (!ico || ico.indexOf("charcode:") !== 0) {
+                        return String.fromCharCode(0xED51); // TODO
+                    }
+                    var charcode = parseInt(ico.substr(9));
+                    return String.fromCharCode(charcode);
+                }
+
                 Rectangle {
                     //anchors.fill: parent
                     x: -parent.x
@@ -82,11 +94,22 @@ TreeView {
 
                     color: styleData.selected? myPalette.mid : myPalette.alternateBase
                 }
+                Text {
+                    id: icon
+                    x: 0
+                    y: (parent.height - height)* 0.6
+                    //anchors.verticalCenter: parent.verticalCenter
+                    text: getIcon(false)
+                    //font.pixelSize: Math.floor(parent.height * 0.36)
+                    font.pointSize: 13
+                }
 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: parent.height * 0.25
-                    text: "[X] " + styleData.value.DisplayName
+                    x: 30
+                    //font.pixelSize: Math.floor(parent.height * 0.28)
+                    text: styleData.value.DisplayName
+                    font.pointSize: 11
                 }
             }
         }
