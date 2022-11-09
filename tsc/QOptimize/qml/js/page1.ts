@@ -72,6 +72,7 @@ function fillDetailItemList(wbemObj: WbemObject, detailItemList: Qt.Repeater) {
     detailItemList.model = fields.length;
     
     var idx = 0;
+    var leftTextLength = 0;
     var byteSizeMask = wbemObj['ByteSizeMask'] || '';
 
     for (var k in wbemObj) {
@@ -91,9 +92,23 @@ function fillDetailItemList(wbemObj: WbemObject, detailItemList: Qt.Repeater) {
             name: k,
             info: v
         }
+        var nameContentWidth = detailItemList.itemAt(idx).nameContentWidth;
+        if (nameContentWidth > leftTextLength) {
+            leftTextLength = nameContentWidth;
+        }
+
         idx++;
     }
+    return leftTextLength;
 }
+
+function adjustInfoLeftMargin(leftTextLength: number, detailItemList: Qt.Repeater) {
+    var size = detailItemList.model;
+    for (var idx = 0; idx < size; idx++) {
+        detailItemList.itemAt(idx).infoLeftMargin = leftTextLength;
+    }
+}
+
 
 function isWbemHeaderType(wbemObj: WbemObject) {
     return wbemObj.Type.indexOf("HEADER") > 0;

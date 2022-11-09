@@ -36,7 +36,7 @@ import QtQuick.Particles 2.0
 
 ApplicationWindow {
     visible: true
-    width: 780
+    width: 940
     height: 600
     minimumWidth: 560
     minimumHeight: 320

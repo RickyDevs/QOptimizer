@@ -870,4 +870,11 @@ void Utilities::preventProcessFromRunning(const QString& pName)
 //		}
 	}
 
-
+QString Utilities::getAlternativeCpuName()
+{
+//	using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0", false))
+//				{
+//					return key.GetValue("ProcessorNameString").ToString();
+//				}
+	return "AMD Ryzen 9 5900X 12-Core Processor            "; // TODO
+}

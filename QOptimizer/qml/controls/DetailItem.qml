@@ -9,6 +9,8 @@ Item {
     width: 400
 
     property var model;
+    property int infoLeftMargin: 120
+    property int nameContentWidth;
 
     SystemPalette { id: myPalette; colorGroup: SystemPalette.Active }
 
@@ -23,7 +25,7 @@ Item {
         id: info
         height: 21
         anchors.verticalCenter: parent.verticalCenter
-        x: 120
+        x: infoLeftMargin
         font.pixelSize: height * 0.65
         color: myPalette.shadow
     }
@@ -31,6 +33,6 @@ Item {
     onModelChanged: {
         name.text = model.name;
         info.text = model.info;
-
+        nameContentWidth = name.contentWidth
     }
 }

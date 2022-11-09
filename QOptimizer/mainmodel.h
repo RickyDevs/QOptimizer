@@ -43,6 +43,7 @@ struct Task {
 	QString query;
 	QStringList fields;
 	QVariantMap defaultDataMap;
+	std::function<void(int)> postFunc;
 
 };
 

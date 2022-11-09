@@ -62,6 +62,7 @@ function fillDetailItemList(wbemObj, detailItemList) {
     console.log(fields);
     detailItemList.model = fields.length;
     var idx = 0;
+    var leftTextLength = 0;
     var byteSizeMask = wbemObj['ByteSizeMask'] || '';
     for (var k in wbemObj) {
         if (skipFields.indexOf(k) >= 0) {
@@ -80,7 +81,18 @@ function fillDetailItemList(wbemObj, detailItemList) {
             name: k,
             info: v
         };
+        var nameContentWidth = detailItemList.itemAt(idx).nameContentWidth;
+        if (nameContentWidth > leftTextLength) {
+            leftTextLength = nameContentWidth;
+        }
         idx++;
+    }
+    return leftTextLength;
+}
+function adjustInfoLeftMargin(leftTextLength, detailItemList) {
+    var size = detailItemList.model;
+    for (var idx = 0; idx < size; idx++) {
+        detailItemList.itemAt(idx).infoLeftMargin = leftTextLength;
     }
 }
 function isWbemHeaderType(wbemObj) {

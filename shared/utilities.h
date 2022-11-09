@@ -56,6 +56,8 @@ public:
 	static void addToStartup();
 	static void deleteFromStartup();
 	static void preventProcessFromRunning(const QString& pName);
+
+	static QString getAlternativeCpuName();
 private:
 	Utilities() = default;
 

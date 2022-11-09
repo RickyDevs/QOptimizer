@@ -29,18 +29,16 @@ Item {
     function showObject(obj) {
         title.text = obj.DisplayName;
         if (Page1JS.isWbemHeaderType(obj)) {
-            todo.text = "TODO: show list of items\n"
-
             detailsItemList.model = 0;
             Page1JS.fillOptimizeItemList(obj, optimizeItemList)
         } else if (Page1JS.isWbemItemType(obj)) {
-            todo.text = ""
             optimizeItemList.model = 0;
-            Page1JS.fillDetailItemList(obj, detailsItemList)
-        } else {
-            todo.text = ""
+            var leftTextLength = Page1JS.fillDetailItemList(obj, detailsItemList)
+            console.log(leftTextLength)
+            if (leftTextLength > 120) {
+                Page1JS.adjustInfoLeftMargin(Math.ceil(leftTextLength /32) * 32, detailsItemList)
+            }
         }
-
     }
 
     SystemPalette {
@@ -59,11 +57,12 @@ Item {
         anchors.fill: parent
         anchors.margins: 18
 
-        Column {
+        Item {
             id: header
             x:0
             y:4
-            spacing: 2
+            height: 32
+           // spacing: 2
 
             Label {
                 id: title
@@ -81,6 +80,12 @@ Item {
         }
 
         ScrollView {
+
+//            Rectangle {
+//                anchors.fill: parent
+//                border.color: 'red'
+//                border.width: 1
+//            }
 
             anchors.top: header.bottom
             anchors.left: parent.left

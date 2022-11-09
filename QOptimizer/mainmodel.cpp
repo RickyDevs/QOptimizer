@@ -22,6 +22,7 @@
 
 #include "qwbemservices.h"
 #include "tagshelper.h"
+#include "utilities.h"
 
 QVariantMap makeUiEntry(const QString& name, const QString& icon, const char* objType) {
 	QVariantMap map;
@@ -40,6 +41,7 @@ public:
 		_task.query = query;
 		_task.fields = fields;
 		_task.defaultDataMap.clear();
+		_task.postFunc = nullptr;
 	}
 	operator Task() const { return std::move(_task); }
 
@@ -57,17 +59,29 @@ public:
 		_task.defaultDataMap["ByteSizeMask"] = QVariant(byteSizeMask);
 		return *this;
 	}
-	WbemTaskBuilder& priority(int priority) {
-		Q_UNUSED(priority)
-		// TODO.. maybe new name...
-		//actions: mandatory? (must run at startup),
-		//         secundary?? (on demand by user clicking on it, e.g fetching other fields)
-		// ou TaskType::WbemCreate; + TaskType::WbemUpdate;
+private:
+	Task _task;
+};
+
+class GenericTaskBuilder
+{
+public:
+	GenericTaskBuilder(TaskAction action) {
+		_task.type = TaskType::Operations;
+		_task.action = action;
+		_task.defaultDataMap.clear();
+		_task.postFunc = nullptr;
+	}
+	operator Task() const { return std::move(_task); }
+
+	GenericTaskBuilder& postFunc(const std::function<void(int)>& func) {
+		_task.postFunc = std::move(func);
 		return *this;
 	}
 private:
 	Task _task;
 };
+
 
 QString displayName(const QVariantMap& map) {
 	QString type = map["Type"].toString();
@@ -93,14 +107,26 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 	_modelData.emplace_back(root);
 
 	addModelData(0,
-				 makeUiEntry("Processors", "charcode:0xE950", HEADER_TAG(k_tagProcessor)),
-				 {
+				makeUiEntry("Processors", "charcode:0xE950", HEADER_TAG(k_tagProcessor)),
+				{
 					WbemTaskBuilder("SELECT * FROM Win32_Processor",
 						{"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores", "NumberOfLogicalProcessors", "Description", "Revision", "VirtualizationFirmwareEnabled"})
 					.objType(ITEM_TAG(k_tagProcessor))
 					.icon("charcode:0xE950")
-					.byteSizeMask("L2CacheSize=k;L3CacheSize=k;")
-				 });
+					.byteSizeMask("L2CacheSize=k;L3CacheSize=k;"),
+					GenericTaskBuilder(TaskAction::UpdateChilds)
+					.postFunc([this](int itemId) {
+						// alternative CPU name?
+						const auto& childs = _modelData.at(itemId).childs;
+						for (unsigned i = 0; i < childs.size(); i++) {
+							auto& dataMap = _modelData.at(childs[i]).dataMap;
+							QVariant valueCheck = dataMap.value("Name");
+							if (!valueCheck.isValid()) {
+								dataMap["Name"] = QVariant(Utilities::getAlternativeCpuName());
+							}
+						}
+					})
+				});
 	addModelData(0,
 				 makeUiEntry("Memory", "qrc://memory.png", HEADER_TAG(k_tagMemory)),
 				 {
@@ -145,13 +171,13 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 				 });
 
 	addModelData(0,
-				 makeUiEntry("BIOS", "charcode:0xE964", HEADER_TAG(k_tagBIOS)),
-				 {
-					 WbemTaskBuilder("SELECT * FROM Win32_BIOS",
+				makeUiEntry("BIOS", "charcode:0xE964", HEADER_TAG(k_tagBIOS)),
+				{
+					WbemTaskBuilder("SELECT * FROM Win32_BIOS",
 						{"Name", "Manufacturer", "Version", "BuildNumber"})
 					.objType(ITEM_TAG(k_tagBIOS))
 					.icon("charcode:0xE964"),
-					 WbemTaskBuilder("SELECT ReleaseDate FROM Win32_BIOS",
+					WbemTaskBuilder("SELECT ReleaseDate FROM Win32_BIOS",
 						{"ReleaseDate"})
 				 });
 }
@@ -258,7 +284,13 @@ void MainModel::processTaskForItem(int itemId, TaskAction actionFilter)
 		_taskQueue[itemId] = task;
 
 		if (task.type == TaskType::Wbem) {
+			Q_ASSERT_X(!task.postFunc, "MainModel", "Wbem dont have postFunc");
 			_wbem->query(task.query, task.fields, itemId);
+		} else if (task.type == TaskType::Operations) {
+			if (task.postFunc) {
+				task.postFunc(itemId);
+			}
+			processTaskForItem(itemId, actionFilter);
 		}
 	}
 }
@@ -272,7 +304,7 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 	}
 	int itemId = queryResult.resultData;
 	int oldChildCount = _modelData.at(itemId).childs.size();
-	const Task& task = _taskQueue[queryResult.resultData];
+	const Task& task = _taskQueue[itemId];
 
 	if (queryResult.resultList.size() > 0) {
 		if (task.action == TaskAction::Append) {
@@ -295,11 +327,6 @@ void MainModel::wbemResult(const QWbemQueryResult& queryResult) {
 void MainModel::wbemResultAppend(const QWbemQueryResult& queryResult) {
 	for (QVariant v : queryResult.resultList) {
 		QVariantMap map = v.toMap();
-		//map["Type"] = QVariant(_taskQueue[queryResult.resultData].objType);
-		//QString byteSizeMask = _taskQueue[queryResult.resultData].byteSizeMask;
-		//if (byteSizeMask != "") {
-		//	map["ByteSizeMask"] = QVariant(byteSizeMask);
-		//}
 		map.unite(_taskQueue[queryResult.resultData].defaultDataMap);
 		QString displayNameStr = displayName(map);
 		// TODO "Unknown" display name?
