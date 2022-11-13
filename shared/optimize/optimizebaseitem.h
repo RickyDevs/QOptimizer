@@ -24,10 +24,6 @@
 #include <memory>
 #include <QString>
 
-enum class OptimizeType { // ???
-	Enable
-};
-
 class OptimizeBaseItem
 {
 public:

@@ -14,6 +14,8 @@ SOURCES += \
     $$PWD/optimize/optimizemanager.cpp \
     $$PWD/optimize/optimizestdcalls.cpp \
     $$PWD/optimize/performancetweaks.cpp \
+    $$PWD/optimize/registrystrategy.cpp \
+    $$PWD/optimize/strategyoptimizeitem.cpp \
     $$PWD/utilities.cpp \
     $$PWD/registry.cpp \
     $$PWD/qtglobalmutex.cpp \
@@ -29,6 +31,8 @@ HEADERS += \
     $$PWD/optimize/optimizemanager.h \
     $$PWD/optimize/optimizestdcalls.h \
     $$PWD/optimize/performancetweaks.h \
+    $$PWD/optimize/registrystrategy.h \
+    $$PWD/optimize/strategyoptimizeitem.h \
     $$PWD/utilities.h \
     $$PWD/enums.h \
     $$PWD/registry.h \

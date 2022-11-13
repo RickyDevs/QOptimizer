@@ -20,6 +20,7 @@
 
 #include "performancetweaks.h"
 #include "optimizestdcalls.h"
+#include "strategyoptimizeitem.h"
 #include "tagshelper.h"
 
 PerformanceTweaks::PerformanceTweaks()
@@ -70,5 +71,21 @@ void PerformanceTweaks::loadItems()
 //	xxx->_tags = TAGS1(tags::k_windows);
 	_items.push_back(xxx);
 
-	// SuperFetch -> memory
+	//StrategyOptimizeItem
+
+	auto item = std::make_shared<StrategyOptimizeItem>("StrategyTest");
+	item->setDetails("StrategyTest", "StrategyTest description");
+	item->setTags(TAGS1(k_tagNetwork));
+	item->setStrategyList(
+		{
+			RegistryBuilder(RegistryStrategy::classesRoot("AllFilesystemObjects\\shellex\\ContextMenuHandlers"))
+					.activeValue({"", "{C2FBB630-2971-11D1-A18C-00C04FD75D13}", "Copy To"})
+					.deactiveValue({"Copy To"}),
+			RegistryBuilder(RegistryStrategy::classesRoot("AllFilesystemObjects\\shellex\\ContextMenuHandlers"))
+					.activeValue({"", "{C2FBB631-2971-11D1-A18C-00C04FD75D13}", "Move To"})
+					.deactiveValue({"Move To"})
+
+		});
+
+	_items.push_back(item);
 }

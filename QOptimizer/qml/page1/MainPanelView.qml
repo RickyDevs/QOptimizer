@@ -71,12 +71,6 @@ Item {
                 //height: 80
                 font.pixelSize: 26
             }
-
-
-            Label {
-                id: todo
-
-            }
         }
 
         ScrollView {

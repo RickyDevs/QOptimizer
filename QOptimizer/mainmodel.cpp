@@ -85,15 +85,19 @@ private:
 
 QString displayName(const QVariantMap& map) {
 	QString type = map["Type"].toString();
-	if (type == "MEMORY_ITEM") {
+	if (type == ITEM_TAG(k_tagMemory)) {
 		return map["BankLabel"].toString();
 	}
-	if (type == "BOARD_ITEM") {
+	if (type == ITEM_TAG(k_tagMotherboard)) {
 		return map["Manufacturer"].toString();
 	}
 	if (type == ITEM_TAG(k_tagDiskDrive)) {
 		return map["Model"].toString();
 	}
+	if (type == ITEM_TAG(k_tagDevice)) {
+		return map["Description"].toString();
+	}
+
 	return map["Name"].toString();
 }
 
@@ -160,6 +164,18 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 					 .objType(ITEM_TAG(k_tagDiskDrive))
 					 .icon("charcode:0xEDA2")
 					 .byteSizeMask("Size=b;")
+				 });
+	addModelData(0,
+				 makeUiEntry("Devices", "charcode:0xEDA2", HEADER_TAG("DEVICE")),
+				 {
+					 WbemTaskBuilder("SELECT * FROM Win32_Keyboard",
+						{"Description", "Layout", "Status", "NumberOfFunctionKeys", "IsLocked"})
+					 .objType(ITEM_TAG("DEVICE"))
+					 .icon("charcode:0xEDA2"),
+					 WbemTaskBuilder("SELECT * FROM Win32_PointingDevice",
+						{"Description", "Manufacturer", "Status", "NumberOfButtons", "IsLocked", "HardwareType", "PointingType", "DeviceInterface"})
+					 .objType(ITEM_TAG("DEVICE"))
+					 .icon("charcode:0xEDA2")
 				 });
 	addModelData(0,
 				 makeUiEntry("Network Adapters", "charcode:0xEDA3", HEADER_TAG(k_tagNetwork)),

@@ -30,6 +30,7 @@
 
 
 #define k_tagBIOS        "BIOS"
+#define k_tagDevice      "DEVICE"
 #define k_tagDiskDrive   "DRIVE"
 #define k_tagGraphics    "GRAPHIC"
 #define k_tagMemory      "MEMORY"
