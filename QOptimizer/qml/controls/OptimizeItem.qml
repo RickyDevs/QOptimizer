@@ -60,6 +60,14 @@ Item {
         }
         ToggleButton {
             property bool _activationNeedsConnect: true;
+
+            function ensureConnected() {
+                if ( _activationNeedsConnect) {
+                    _activationNeedsConnect = false;
+                    model.activeChanged.connect(onActiveChanged)
+                }
+            }
+
             id: toggleButton
             manualSwitchMode: true
             width: 50
@@ -71,10 +79,7 @@ Item {
                 console.log('onActivating', model.identifier);
                 //root.activateOptimize(model.identifier);
 
-                if ( _activationNeedsConnect) {
-                    _activationNeedsConnect = false;
-                    model.activeChanged.connect(onActiveChanged)
-                }
+                ensureConnected();
 
                 delayedButtonAction.performActivation = true
                 delayedButtonAction.start()
@@ -83,6 +88,7 @@ Item {
 
             onDeactivating: {
                 console.log('onDeactivating', model.identifier);
+                ensureConnected();
                 //root.deactivateOptimize(model.identifier);
 
                 delayedButtonAction.performActivation = false

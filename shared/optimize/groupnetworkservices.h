@@ -18,27 +18,23 @@
 **
 ****************************************************************************/
 
-#include "optimizemanager.h"
-#include "groupperformancetweaks.h"
-#include "groupnetworkservices.h"
-#include "groupwindowscustom.h"
+#ifndef GROUPNETWORKSERVICES_H
+#define GROUPNETWORKSERVICES_H
 
-OptimizeManager::OptimizeManager()
+#include "optimizegroupitem.h"
+
+class GroupNetworkServices : public OptimizeGroupItem
 {
-}
+public:
+	GroupNetworkServices();
 
-std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeManager::items()
-{
-	ensureLoaded();
+	QString name() override;
 
-	return _items;
-}
+	QString description() override;
 
-void OptimizeManager::ensureLoaded()
-{
-	if (_items.size() == 0) {
-		_items.push_back(std::make_shared<GroupPerformanceTweaks>());
-		_items.push_back(std::make_shared<GroupNetworkServices>());
-		_items.push_back(std::make_shared<GroupWindowsCustom>());
-	}
-}
+protected:
+	void loadItems() override;
+
+};
+
+#endif // GROUPNETWORKSERVICES_H

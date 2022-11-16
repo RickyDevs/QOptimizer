@@ -18,27 +18,31 @@
 **
 ****************************************************************************/
 
-#include "optimizemanager.h"
-#include "groupperformancetweaks.h"
-#include "groupnetworkservices.h"
-#include "groupwindowscustom.h"
+#include "registryutil.h"
 
-OptimizeManager::OptimizeManager()
+#include <QSettings>
+#include "registrystrategy.h"
+
+namespace registry_util
 {
+
+static QSettings settings("FakeRegistry.ini", QSettings::IniFormat);
+
+QVariant get(const QString &uKey)
+{
+	return settings.value(uKey);
 }
 
-std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeManager::items()
-{
-	ensureLoaded();
 
-	return _items;
+void set(const QString &uKey, const QVariant &value)
+{
+	settings.setValue(uKey, value);
 }
 
-void OptimizeManager::ensureLoaded()
+void remove(const QString &uKey)
 {
-	if (_items.size() == 0) {
-		_items.push_back(std::make_shared<GroupPerformanceTweaks>());
-		_items.push_back(std::make_shared<GroupNetworkServices>());
-		_items.push_back(std::make_shared<GroupWindowsCustom>());
-	}
+	settings.remove(uKey);
+}
+
+
 }

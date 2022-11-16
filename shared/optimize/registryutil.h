@@ -18,27 +18,27 @@
 **
 ****************************************************************************/
 
-#include "optimizemanager.h"
-#include "groupperformancetweaks.h"
-#include "groupnetworkservices.h"
-#include "groupwindowscustom.h"
+#ifndef REGISTRYUTIL_H
+#define REGISTRYUTIL_H
 
-OptimizeManager::OptimizeManager()
+#include <QString>
+#include <QVariant>
+
+enum RegistryKeyEnum : int {
+	currentUser = 1,
+	classesRoot = 2,
+	localMachine = 3,
+};
+
+namespace registry_util
 {
+
+QVariant get(const QString &uKey);
+
+void set(const QString &uKey, const QVariant &value);
+
+void remove(const QString &uKey);
+
 }
 
-std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeManager::items()
-{
-	ensureLoaded();
-
-	return _items;
-}
-
-void OptimizeManager::ensureLoaded()
-{
-	if (_items.size() == 0) {
-		_items.push_back(std::make_shared<GroupPerformanceTweaks>());
-		_items.push_back(std::make_shared<GroupNetworkServices>());
-		_items.push_back(std::make_shared<GroupWindowsCustom>());
-	}
-}
+#endif // REGISTRYUTIL_H

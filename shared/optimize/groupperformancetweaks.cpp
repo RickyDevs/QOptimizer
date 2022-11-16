@@ -18,29 +18,27 @@
 **
 ****************************************************************************/
 
-#include "performancetweaks.h"
+#include "groupperformancetweaks.h"
 #include "optimizestdcalls.h"
 #include "strategyoptimizeitem.h"
 #include "tagshelper.h"
 
-PerformanceTweaks::PerformanceTweaks()
+GroupPerformanceTweaks::GroupPerformanceTweaks()
 {
 
 }
 
-QString PerformanceTweaks::name()
+QString GroupPerformanceTweaks::name()
 {
 	return QString::fromLatin1("Performance Tweaks");
 }
 
-QString PerformanceTweaks::description()
+QString GroupPerformanceTweaks::description()
 {
 	return QString::fromLatin1("Performance Tweaks description");
 }
 
-#define concat(first, second) first " " second
-
-void PerformanceTweaks::loadItems()
+void GroupPerformanceTweaks::loadItems()
 {
 	//Q_ASSERT(false);
 
@@ -59,11 +57,17 @@ void PerformanceTweaks::loadItems()
 	_items.push_back(xxx);
 
 
-	xxx = std::make_shared<OptimizeStdCalls>("RemoteAssistance");
-	xxx->_name = "Disable Remote Assistance";
-	xxx->_description = "TODO: Network stuff";
-	xxx->_tags = TAGS1(k_tagNetwork);
-	_items.push_back(xxx);
+	auto item = std::make_shared<StrategyOptimizeItem>("RemoteAssistance");
+	item->setDetails("Disable Remote Assistance", "Disable Remote Assistance");
+	item->setTags(TAGS2(k_tagNetwork, k_tagProcessor));
+	item->setStrategyList(
+		{
+			RegistryBuilder(RegistryStrategy::localMachine("System\\CurrentControlSet\\Control\\Remote Assistance"))
+					.activeValue({"fAllowToGetHelp", 0})
+					.deactiveValue({"fAllowToGetHelp", 1})
+		});
+
+	_items.push_back(item);
 
 	xxx = std::make_shared<OptimizeStdCalls>("ShakingAnimation");
 	xxx->_name = "Disable shaking to minimize";
@@ -73,19 +77,5 @@ void PerformanceTweaks::loadItems()
 
 	//StrategyOptimizeItem
 
-	auto item = std::make_shared<StrategyOptimizeItem>("StrategyTest");
-	item->setDetails("StrategyTest", "StrategyTest description");
-	item->setTags(TAGS1(k_tagNetwork));
-	item->setStrategyList(
-		{
-			RegistryBuilder(RegistryStrategy::classesRoot("AllFilesystemObjects\\shellex\\ContextMenuHandlers"))
-					.activeValue({"", "{C2FBB630-2971-11D1-A18C-00C04FD75D13}", "Copy To"})
-					.deactiveValue({"Copy To"}),
-			RegistryBuilder(RegistryStrategy::classesRoot("AllFilesystemObjects\\shellex\\ContextMenuHandlers"))
-					.activeValue({"", "{C2FBB631-2971-11D1-A18C-00C04FD75D13}", "Move To"})
-					.deactiveValue({"Move To"})
 
-		});
-
-	_items.push_back(item);
 }

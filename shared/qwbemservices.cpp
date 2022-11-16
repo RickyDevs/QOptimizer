@@ -75,7 +75,7 @@ public:
 		_result = new QWbemQueryResult(resultData);
 	}
 
-	~ResponseSink()
+	virtual ~ResponseSink()
 	{
 		delete _result;
 	}

@@ -18,23 +18,21 @@
 **
 ****************************************************************************/
 
-#ifndef PERFORMANCETWEAKS_H
-#define PERFORMANCETWEAKS_H
+#ifndef GROUPWINDOWSCUSTOMIZATION_H
+#define GROUPWINDOWSCUSTOMIZATION_H
 
 #include "optimizegroupitem.h"
 
-class PerformanceTweaks : public OptimizeGroupItem
+class GroupWindowsCustom : public OptimizeGroupItem
 {
 public:
-	explicit PerformanceTweaks();
+	GroupWindowsCustom();
 
 	QString name() override;
-
 	QString description() override;
 
 protected:
 	void loadItems() override;
-
 };
 
-#endif // PERFORMANCETWEAKS_H
+#endif // GROUPWINDOWSCUSTOMIZATION_H

@@ -83,6 +83,7 @@ public:
 
 	static RegistryKey currentUser(const char* subKey);
 	static RegistryKey classesRoot(const char* subKey);
+	static RegistryKey localMachine(const char* subKey);
 
 private:
 	RegistryKey _key;

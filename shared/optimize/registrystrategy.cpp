@@ -20,26 +20,7 @@
 
 #include "registrystrategy.h"
 
-#include <qt_windows.h>
-
-enum RegistryKeyEnum : int {
-	currentUser = 1,
-	classesRoot = 2,
-};
-
-HKEY hKeyFromRegistryKey(const RegistryKey& key)
-{
-	switch (key.root) {
-	case RegistryKeyEnum::currentUser:
-		return HKEY_CURRENT_USER;
-	case RegistryKeyEnum::classesRoot:
-		return HKEY_CLASSES_ROOT;
-	default:
-		break;
-	}
-	return 0;
-}
-
+#include "registryutil.h"
 
 RegistryAction::RegistryAction(RegistryStrategy *parent)
 	: _parent(parent)
@@ -49,155 +30,45 @@ RegistryAction::RegistryAction(RegistryStrategy *parent)
 
 bool RegistryAction::equalsTo(const RegistryActionValue& value) const
 {
+	std::string path = _parent->key().path;
+	if (!value.subPath.empty()) {
+		path += "\\" + value.subPath;
+	}
+	QVariant v = registry_util::get(path.c_str());
+
+	switch (value.type) {
+	case Number:
+	case String:
+		return (v.toString() == value.string.c_str());
+	case Null:
+// TODO
+		break;
+	}
 	return false; //TODO
 }
 
 void RegistryAction::setTo(const RegistryActionValue& value)
 {
 	std::string path = _parent->key().path;
+	if (!value.subPath.empty()) {
+		path += "\\" + value.subPath;
+	}
+
 	switch (value.type) {
 	case Number:
 	case String:
-
-//TODO		if (value.subPath) {
-//			path += "\\" + value.subPath;
-//		}
-
+		registry_util::set(path.c_str(), QVariant(value.string.c_str()));
 
 		break;
 	case Null:
 // TODO
+		registry_util::remove(path.c_str());
 		break;
 	default:
 		Q_ASSERT(false);
 		break;
 	}
-
-	/*
-	 *
-	 *
-
-
-void QWinSettingsPrivate::set(const QString &uKey, const QVariant &value)
-{
-	if (writeHandle() == 0) {
-		setStatus(QSettings::AccessError);
-		return;
-	}
-
-	QString rKey = escapedKey(uKey);
-
-	HKEY handle = createOrOpenKey(writeHandle(), registryPermissions, keyPath(rKey), access);
-	if (handle == 0) {
-		setStatus(QSettings::AccessError);
-		return;
-	}
-
-	DWORD type;
-	QByteArray regValueBuff;
-
-	// Determine the type
-	switch (value.type()) {
-		case QVariant::List:
-		case QVariant::StringList: {
-			// If none of the elements contains '\0', we can use REG_MULTI_SZ, the
-			// native registry string list type. Otherwise we use REG_BINARY.
-			type = REG_MULTI_SZ;
-			QStringList l = variantListToStringList(value.toList());
-			QStringList::const_iterator it = l.constBegin();
-			for (; it != l.constEnd(); ++it) {
-				if ((*it).length() == 0 || it->contains(QChar::Null)) {
-					type = REG_BINARY;
-					break;
-				}
-			}
-
-			if (type == REG_BINARY) {
-				QString s = variantToString(value);
-				regValueBuff = QByteArray((const char*)s.utf16(), s.length() * 2);
-			} else {
-				QStringList::const_iterator it = l.constBegin();
-				for (; it != l.constEnd(); ++it) {
-					const QString &s = *it;
-					regValueBuff += QByteArray((const char*)s.utf16(), (s.length() + 1) * 2);
-				}
-				regValueBuff.append((char)0);
-				regValueBuff.append((char)0);
-			}
-			break;
-		}
-
-		case QVariant::Int:
-		case QVariant::UInt: {
-			type = REG_DWORD;
-			qint32 i = value.toInt();
-			regValueBuff = QByteArray((const char*)&i, sizeof(qint32));
-			break;
-		}
-
-		case QVariant::LongLong:
-		case QVariant::ULongLong: {
-			type = REG_QWORD;
-			qint64 i = value.toLongLong();
-			regValueBuff = QByteArray((const char*)&i, sizeof(qint64));
-			break;
-		}
-
-		case QVariant::ByteArray:
-			Q_FALLTHROUGH();
-
-		default: {
-			// If the string does not contain '\0', we can use REG_SZ, the native registry
-			// string type. Otherwise we use REG_BINARY.
-			QString s = variantToString(value);
-			type = s.contains(QChar::Null) ? REG_BINARY : REG_SZ;
-			if (type == REG_BINARY) {
-				regValueBuff = QByteArray((const char*)s.utf16(), s.length() * 2);
-			} else {
-				regValueBuff = QByteArray((const char*)s.utf16(), (s.length() + 1) * 2);
-			}
-			break;
-		}
-	}
-
-	// set the value
-	LONG res = RegSetValueEx(handle, reinterpret_cast<const wchar_t *>(keyName(rKey).utf16()), 0, type,
-							 reinterpret_cast<const unsigned char*>(regValueBuff.constData()),
-							 regValueBuff.size());
-
-	if (res == ERROR_SUCCESS) {
-		deleteWriteHandleOnExit = false;
-	} else {
-		qWarning("QSettings: failed to set subkey \"%s\": %s",
-				rKey.toLatin1().data(), errorCodeToString(res).toLatin1().data());
-		setStatus(QSettings::AccessError);
-	}
-
-	RegCloseKey(handle);
 }
-
-bool QWinSettingsPrivate::get(const QString &uKey, QVariant *value) const
-{
-	QString rKey = escapedKey(uKey);
-
-	for (int i = 0; i < regList.size(); ++i) {
-		HKEY handle = regList.at(i).handle();
-		if (handle != 0 && readKey(handle, rKey, value))
-			return true;
-
-		if (!fallbacks)
-			return false;
-	}
-
-	return false;
-}
-
-
-	 *
-	 */
-
-}
-
 
 RegistryStrategy::RegistryStrategy(const RegistryKey& key)
 	: _key(key)
@@ -216,6 +87,14 @@ RegistryKey RegistryStrategy::classesRoot(const char* subKey)
 {
 	RegistryKey key;
 	key.root = RegistryKeyEnum::classesRoot;
+	key.path = subKey;
+	return key;
+}
+
+RegistryKey RegistryStrategy::localMachine(const char* subKey)
+{
+	RegistryKey key;
+	key.root = RegistryKeyEnum::localMachine;
 	key.path = subKey;
 	return key;
 }

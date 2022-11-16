@@ -9,11 +9,13 @@ SOURCES += \
     $$PWD/cleanhelper.cpp \
     $$PWD/config.cpp \
     $$PWD/configops.cpp \
+    $$PWD/optimize/groupperformancetweaks.cpp \
+    $$PWD/optimize/groupnetworkservices.cpp \
+    $$PWD/optimize/groupwindowscustom.cpp \
     $$PWD/optimize/optimizebaseitem.cpp \
     $$PWD/optimize/optimizegroupitem.cpp \
     $$PWD/optimize/optimizemanager.cpp \
     $$PWD/optimize/optimizestdcalls.cpp \
-    $$PWD/optimize/performancetweaks.cpp \
     $$PWD/optimize/registrystrategy.cpp \
     $$PWD/optimize/strategyoptimizeitem.cpp \
     $$PWD/utilities.cpp \
@@ -26,11 +28,13 @@ HEADERS += \
     $$PWD/cleanhelper.h \
     $$PWD/config.h \
     $$PWD/configops.h \
+    $$PWD/optimize/groupperformancetweaks.h \
+    $$PWD/optimize/groupnetworkservices.h \
+    $$PWD/optimize/groupwindowscustom.h \
     $$PWD/optimize/optimizebaseitem.h \
     $$PWD/optimize/optimizegroupitem.h \
     $$PWD/optimize/optimizemanager.h \
     $$PWD/optimize/optimizestdcalls.h \
-    $$PWD/optimize/performancetweaks.h \
     $$PWD/optimize/registrystrategy.h \
     $$PWD/optimize/strategyoptimizeitem.h \
     $$PWD/utilities.h \
@@ -40,7 +44,6 @@ HEADERS += \
     $$PWD/errorlogger.h \
     $$PWD/jsonconvert.h \
     $$PWD/tagshelper.h
-    
 
 contains( qo_shared, wbem ) {
     # qo_shared contains 'wbem'
@@ -54,5 +57,26 @@ contains( qo_shared, wbem ) {
     SOURCES += \
         $$PWD/qcominitializer.cpp \
         $$PWD/qwbemservices.cpp
+
+}
+
+contains( qo_shared, registry_fake ) {
+    # qo_shared contains fake registry
+    message( "Configuring fake registry build..." )
+
+    HEADERS += \
+        $$PWD/optimize/registryutil.h
+
+    SOURCES += \
+        $$PWD/optimize/registryutil_fake.cpp
+
+} else {
+    message( "Configuring real registry build..." )
+
+    HEADERS += \
+        $$PWD/optimize/registryutil.h
+
+    SOURCES += \
+        $$PWD/optimize/registryutil_impl.cpp
 
 }

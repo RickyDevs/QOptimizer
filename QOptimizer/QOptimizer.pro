@@ -9,7 +9,7 @@ LIBS += -lwbemuuid
 QML_IMPORT_NAME = io.qoptimizer.backend
 QML_IMPORT_MAJOR_VERSION = 1
 
-qo_shared += wbem
+qo_shared += wbem registry_fake
 
 include(../shared/shared.pri)
 

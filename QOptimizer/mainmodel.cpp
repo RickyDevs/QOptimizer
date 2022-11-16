@@ -111,7 +111,7 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 	_modelData.emplace_back(root);
 
 	addModelData(0,
-				makeUiEntry("Processors", "charcode:0xE950", HEADER_TAG(k_tagProcessor)),
+				makeUiEntry("Processor", "charcode:0xE950", HEADER_TAG(k_tagProcessor)),
 				{
 					WbemTaskBuilder("SELECT * FROM Win32_Processor",
 						{"Name", "L2CacheSize", "L3CacheSize", "NumberOfCores", "NumberOfLogicalProcessors", "Description", "Revision", "VirtualizationFirmwareEnabled"})
