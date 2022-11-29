@@ -19,6 +19,8 @@
 ****************************************************************************/
 
 #include "qoptimizeproxymanager.h"
+#include "optimizegroupitem.h"
+#include <QTimerEvent>
 
 bool match(OptimizeBaseItem& item, const QVariantMap& queryMap)
 {
@@ -45,12 +47,21 @@ QOptimizeProxyManager::QOptimizeProxyManager(QObject *parent)
 	: QObject(parent)
 {
 	_optimizeManager.reset(new OptimizeManager());
+	bool shouldRunProcessingContext = true;
+	if (shouldRunProcessingContext) {
+		_context.reset(OptimizeProcessingContext::createActiveFromOriginProcessor(_optimizeManager.get()));
+		_processingTimer.start(100, this);
+	}
+}
+
+QOptimizeProxyManager::~QOptimizeProxyManager()
+{
 }
 
 QList<QObject*> QOptimizeProxyManager::query(const QVariantMap& queryMap)
 {
 	QList<QObject*> list;
-	auto result =_optimizeManager->items();
+	auto result = _optimizeManager->items();
 	for (std::shared_ptr<OptimizeBaseItem>& item : result) {
 		if (!match(*item, queryMap)) {
 			continue;
@@ -68,3 +79,30 @@ QList<QObject*> QOptimizeProxyManager::query(const QVariantMap& queryMap)
 	return list;
 }
 
+
+bool QOptimizeProxyManager::isProcessing()
+{
+	return _processingTimer.isActive();
+}
+
+void QOptimizeProxyManager::timerEvent(QTimerEvent *event) {
+	if (event->timerId() != _processingTimer.timerId()) {
+		QObject::timerEvent(event);
+		return;
+	}
+
+	if (_context->hasEnded()) {
+		_processingTimer.stop();
+		emit processingEnded();
+	}
+
+	//Q_ASSERT_X(dynamic_cast<OptimizeGroupItem*>(_optimizeManager->items()[_context->currentIndex].get()), "QOptimizeProxyManager", "Not a group item");
+
+	//auto& group = _optimizeManager->items()[_context->currentIndex];
+	//for(auto& item : group->items()) {
+		// TODO process isActiveFromInstall ..
+		_context->processNext();
+	//}
+
+	//_context->currentIndex++;
+}

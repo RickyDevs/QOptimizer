@@ -18,27 +18,36 @@
 **
 ****************************************************************************/
 
-#ifndef OPTIMIZEMANAGER_H
-#define OPTIMIZEMANAGER_H
+#ifndef OPTIMIZEPROCESSINGCONTEXT_H
+#define OPTIMIZEPROCESSINGCONTEXT_H
 
-#include "optimizebaseitem.h"
+#include <QString>
+#include <QStringList>
 
-class OptimizeManager
+#include <functional>
+
+class OptimizeManager;
+
+class OptimizeProcessingContext
 {
 public:
-	OptimizeManager();
-	~OptimizeManager() {}
+	bool hasEnded();
+	void processNext();
 
-	std::vector<std::shared_ptr<OptimizeBaseItem>> items();
+	void ensureProcessed(const QString& identifier);
 
-	std::shared_ptr<OptimizeBaseItem> itemByIdentifier(const QString& identifier);
-
-	static QStringList allIdentifiersOfItem(const std::shared_ptr<OptimizeBaseItem>& itemPtr);
+	static OptimizeProcessingContext* createActiveFromOriginProcessor(OptimizeManager* manager);
 
 private:
-	void ensureLoaded();
+	OptimizeProcessingContext();
 
-	std::vector<std::shared_ptr<OptimizeBaseItem>> _items;
+	int _index;
+	QStringList _processedItemsList;
+	bool _ended;
+
+	std::function<QStringList(int i)> _itemsToProcessImpl;
+	std::function<void(const QString&)> _processItemImpl;
 };
 
-#endif // OPTIMIZEMANAGER_H
+
+#endif // OPTIMIZEPROCESSINGCONTEXT_H

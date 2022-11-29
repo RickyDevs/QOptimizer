@@ -23,24 +23,30 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QBasicTimer>
 #include "qoptimizeproxyitem.h"
 #include "optimizemanager.h"
-
+#include "optimizeprocessingcontext.h"
 
 class QOptimizeProxyManager : public QObject
 {
 	Q_OBJECT
 public:
 	explicit QOptimizeProxyManager(QObject *parent = 0);
-	~QOptimizeProxyManager() {}
+	~QOptimizeProxyManager();
 
+	Q_INVOKABLE bool isProcessing();
 	Q_INVOKABLE QList<QObject*> query(const QVariantMap& queryMap);
 
-//signals:
+signals:
+	void processingEnded();
 
 //public slots:
 private:
+	void timerEvent(QTimerEvent *event) override;
 	std::unique_ptr<OptimizeManager> _optimizeManager;
+	QBasicTimer _processingTimer;
+	std::unique_ptr<OptimizeProcessingContext> _context;
 };
 
 #endif // QOPTIMIZEPROXYMANAGER_H

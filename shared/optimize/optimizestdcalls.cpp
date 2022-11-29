@@ -27,7 +27,7 @@ OptimizeStdCalls::OptimizeStdCalls(const char* identifier)
 
 void OptimizeStdCalls::checkOriginalStateImpl()
 {
-	Q_ASSERT(false);
+//TODO	Q_ASSERT(false);
 }
 
 QString OptimizeStdCalls::name()

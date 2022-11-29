@@ -78,7 +78,8 @@ QString OptimizeBaseItem::profiles() const
 
 void OptimizeBaseItem::checkOriginalStateImpl()
 {
-	Q_ASSERT(false);
+//TODO	Q_ASSERT(false);
+	qDebug("TODO checkOriginalStateImpl %s", _identifier);
 }
 
 std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeBaseItem::items()

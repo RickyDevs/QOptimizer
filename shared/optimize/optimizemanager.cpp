@@ -23,6 +23,8 @@
 #include "groupnetworkservices.h"
 #include "groupwindowscustom.h"
 
+#include <QStringList>
+
 OptimizeManager::OptimizeManager()
 {
 }
@@ -41,4 +43,34 @@ void OptimizeManager::ensureLoaded()
 		_items.push_back(std::make_shared<GroupNetworkServices>());
 		_items.push_back(std::make_shared<GroupWindowsCustom>());
 	}
+}
+
+QStringList OptimizeManager::allIdentifiersOfItem(const std::shared_ptr<OptimizeBaseItem>& itemPtr)
+{
+	QStringList list;
+	list << itemPtr->identifier();
+	auto max = itemPtr->items().size();
+	for (int idx = 0; idx < max; idx++) {
+		list << itemPtr->items().at(idx)->identifier();
+	}
+	return list;
+}
+
+std::shared_ptr<OptimizeBaseItem> OptimizeManager::itemByIdentifier(const QString &identifier)
+{
+	for (auto it1 = _items.begin(); it1 != _items.end();) {
+		if ((*it1)->identifier() == identifier) {
+			return *it1;
+		}
+		auto subItems = (*it1)->items();
+		for (auto it2 = subItems.begin(); it2 != subItems.end();) {
+			if ((*it2)->identifier() == identifier) {
+				return (*it2);
+			}
+			it2++;
+		}
+		it1++;
+	}
+
+	return std::shared_ptr<OptimizeBaseItem>();
 }

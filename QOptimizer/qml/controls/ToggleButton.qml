@@ -90,12 +90,12 @@ Item {
         State {
             name: "activating"
             PropertyChanges { target: background0; color: Qt.lighter(myPalette.shadow, 1.2) ; border.color: Qt.lighter(myPalette.shadow, 1.2) }
-            PropertyChanges { target: knob; color: myPalette.base; x: parent.width - width - 2 }
+            PropertyChanges { target: knob; color: myPalette.base; x: parent.width / 5 } //parent.width - width - 2 }
         },
         State {
             name: "deactivating"
             PropertyChanges { target: background0; color: getColorOn() ; border.color: getColorOn() }
-            PropertyChanges { target: knob; color: myPalette.base; x: 2 }
+            PropertyChanges { target: knob; color: myPalette.base; x: 4 * parent.width / 5 - width } //2 }
         },
         State {
             name: "on"

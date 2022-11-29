@@ -85,20 +85,25 @@ private:
 
 QString displayName(const QVariantMap& map) {
 	QString type = map["Type"].toString();
+	QVariant nameValue;
 	if (type == ITEM_TAG(k_tagMemory)) {
-		return map["BankLabel"].toString();
+		nameValue = map["BankLabel"];
+	} else if (type == ITEM_TAG(k_tagMotherboard)) {
+		nameValue = map["Manufacturer"];
+	} else if (type ==ITEM_TAG(k_tagDiskDrive)) {
+		nameValue = map["Model"];
+	} else if (type == ITEM_TAG(k_tagDevice)) {
+		nameValue = map["Description"];
+	} else if (type == ITEM_TAG(k_tagNetwork)) {
+		nameValue = map["ProductName"];
+	} else {
+		nameValue = map["Name"];
 	}
-	if (type == ITEM_TAG(k_tagMotherboard)) {
-		return map["Manufacturer"].toString();
-	}
-	if (type == ITEM_TAG(k_tagDiskDrive)) {
-		return map["Model"].toString();
-	}
-	if (type == ITEM_TAG(k_tagDevice)) {
-		return map["Description"].toString();
+	if (!nameValue.isValid() || nameValue.isNull()) {
+		return "<Unknown>";
 	}
 
-	return map["Name"].toString();
+	return nameValue.toString();
 }
 
 MainModel::MainModel(QWbemServices* wbem, QObject *parent)
@@ -180,8 +185,9 @@ MainModel::MainModel(QWbemServices* wbem, QObject *parent)
 	addModelData(0,
 				 makeUiEntry("Network Adapters", "charcode:0xEDA3", HEADER_TAG(k_tagNetwork)),
 				 {
-					 WbemTaskBuilder("SELECT * FROM Win32_NetworkAdapter",
-						{"AdapterType", "Manufacturer", "ProductName", "PhysicalAdapter", "MacAddress", "ServiceName"})
+					 WbemTaskBuilder("SELECT * FROM Win32_NetworkAdapter"
+									 " WHERE PhysicalAdapter != 0",
+						{"AdapterType", "Manufacturer", "ProductName", /*"PhysicalAdapter",*/ "MacAddress", "ServiceName"})
 					 .objType(ITEM_TAG(k_tagNetwork))
 					 .icon("charcode:0xEDA3")
 				 });
@@ -345,7 +351,6 @@ void MainModel::wbemResultAppend(const QWbemQueryResult& queryResult) {
 		QVariantMap map = v.toMap();
 		map.unite(_taskQueue[queryResult.resultData].defaultDataMap);
 		QString displayNameStr = displayName(map);
-		// TODO "Unknown" display name?
 		if (displayNameStr != "") {
 			map["DisplayName"] = QVariant(displayNameStr);
 			addModelData(queryResult.resultData, map, {});
