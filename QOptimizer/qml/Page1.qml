@@ -34,13 +34,22 @@ Item {
         width: 320
         height: parent.height
 
-        //onActivated: {
-        onClicked: {
-            var obj = treeView.model.data(index, 258);
+        function updateControls(itemIndex) {
+            var obj = treeView.model.data(itemIndex, 258);
             //console.log(obj);
             panelView.showObject(obj)
-            expand(index)
-            treeView.model.checkForPendingUpdates(index);
+            expand(itemIndex)
+            treeView.model.checkForPendingUpdates(itemIndex);
+        }
+
+        onClicked: {
+            updateControls(index)
+        }
+
+        Keys.onReturnPressed: {
+            if (treeView.currentIndex.valid) {
+                updateControls(treeView.currentIndex)
+            }
         }
     }
 

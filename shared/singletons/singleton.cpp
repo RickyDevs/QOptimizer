@@ -18,24 +18,28 @@
 **
 ****************************************************************************/
 
-#include "optimizestdcalls.h"
+#include "singleton.h"
+#include <QtGlobal>
+#include <unordered_map>
+#include <typeindex>
 
-OptimizeStdCalls::OptimizeStdCalls(const char* identifier)
-	: OptimizeBaseItem(identifier), _name(nullptr), _description(nullptr), _tags(nullptr)
+namespace singleton_util {
+
+static std::unordered_map<size_t, std::function<void*()>> _singletonRegistry;
+
+void registerImplementation(const std::type_info& typeInfo, std::function<void*()> createFn)
 {
+	_singletonRegistry[typeInfo.hash_code()] = createFn;
 }
 
-QString OptimizeStdCalls::name()
+void* createInstance(const std::type_info& typeInfo)
 {
-	return QString::fromLatin1(_name);
+	auto createFnIt = _singletonRegistry.find(typeInfo.hash_code());
+	Q_ASSERT_X(createFnIt != _singletonRegistry.end(), "Create singleton class", std::type_index(typeInfo).name());
+	return createFnIt->second();
 }
 
-QString OptimizeStdCalls::description()
-{
-	return QString::fromLatin1(_description);
 }
 
-QString OptimizeStdCalls::tags() const
-{
-	return QString::fromLatin1(_tags);
-}
+
+

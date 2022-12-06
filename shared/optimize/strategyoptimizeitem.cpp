@@ -65,6 +65,7 @@ void StrategyOptimizeItem::activate()
 
 void StrategyOptimizeItem::deactivate()
 {
+	// TODO reverse it
 	for (auto& reg : _registryList) {
 		reg.currentValue().setTo(reg.deactiveValue());
 	}
@@ -76,7 +77,3 @@ bool StrategyOptimizeItem::isActive()
 	return reg.currentValue().equalsTo(reg.activeValue());
 }
 
-bool StrategyOptimizeItem::isActiveFromOrigin()
-{
-	return false; // TODO
-}

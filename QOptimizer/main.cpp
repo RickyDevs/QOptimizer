@@ -29,6 +29,7 @@
 #include "program.h"
 #include "qcominitializer.h"
 #include "qoptimizeproxymanager.h"
+#include "activefromoriginimpl.h"
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
@@ -65,12 +66,19 @@ int main(int argc, char *argv[])
 		   // _dup2(fd, _fileno(stderr));
 
 
+	QCoreApplication::setOrganizationName("RickyDevs-Soft");
+	QCoreApplication::setApplicationName("QOptimizer");
+
 	QQmlApplicationEngine engine;
 	QQmlContext *context = engine.rootContext();
 
 	if (comInit.isOk()) {
 		comInit.initSecurity();
 	}
+
+
+	// Inject singleton implementations
+	IActiveFromOrigin::registerImplementation(ActiveFromOriginImpl::create);
 
 	// Inject C++ class to QML
 	context->setContextProperty(QStringLiteral("optimizeManager"), new QOptimizeProxyManager(&engine));

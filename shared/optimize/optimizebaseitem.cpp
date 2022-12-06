@@ -21,6 +21,8 @@
 #include "optimizebaseitem.h"
 #include <QThread>
 
+#include "iactivefromorigin.h"
+
 OptimizeBaseItem::OptimizeBaseItem(const char* identifier)
 {
 	Q_ASSERT(identifier != nullptr);
@@ -52,7 +54,7 @@ bool OptimizeBaseItem::isActive()
 
 bool OptimizeBaseItem::isActiveFromOrigin()
 {
-	return false;
+	return IActiveFromOrigin::instance().isActive(_identifier);
 }
 
 
@@ -78,8 +80,9 @@ QString OptimizeBaseItem::profiles() const
 
 void OptimizeBaseItem::checkOriginalStateImpl()
 {
-//TODO	Q_ASSERT(false);
-	qDebug("TODO checkOriginalStateImpl %s", _identifier);
+	bool active = isActive();
+	IActiveFromOrigin::instance().setActive(_identifier, active);
+	qDebug("checkOriginalStateImpl %s %d", _identifier, active);
 }
 
 std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeBaseItem::items()

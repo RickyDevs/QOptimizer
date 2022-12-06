@@ -40,7 +40,7 @@ QString GroupWindowsCustom::description()
 
 void GroupWindowsCustom::loadItems()
 {
-	auto item = std::make_shared<StrategyOptimizeItem>("\"Copy/Move to\" context menu");
+	auto item = std::make_shared<StrategyOptimizeItem>("CopyMoveToContextMenu");
 	item->setDetails("StrategyTest", "StrategyTest description");
 	item->setTags(TAGS1(k_tagWindows));
 	item->setStrategyList(

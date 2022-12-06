@@ -39,7 +39,7 @@ QString GroupNetworkServices::description()
 
 void GroupNetworkServices::loadItems()
 {
-	auto item = std::make_shared<StrategyOptimizeItem>("Copy/Move to options");
+	auto item = std::make_shared<StrategyOptimizeItem>("Copy_MoveToOptions");
 	item->setDetails("StrategyTest", "StrategyTest description");
 	item->setTags(TAGS1(k_tagNetwork));
 	item->setStrategyList(

@@ -18,24 +18,30 @@
 **
 ****************************************************************************/
 
-#include "optimizestdcalls.h"
+#ifndef ACTIVEFROMORIGINIMPL_H
+#define ACTIVEFROMORIGINIMPL_H
 
-OptimizeStdCalls::OptimizeStdCalls(const char* identifier)
-	: OptimizeBaseItem(identifier), _name(nullptr), _description(nullptr), _tags(nullptr)
-{
-}
+#include "iactivefromorigin.h"
 
-QString OptimizeStdCalls::name()
-{
-	return QString::fromLatin1(_name);
-}
+#include <QSettings>
 
-QString OptimizeStdCalls::description()
+class ActiveFromOriginImpl : public IActiveFromOrigin
 {
-	return QString::fromLatin1(_description);
-}
+public:
+	static ActiveFromOriginImpl* create();
 
-QString OptimizeStdCalls::tags() const
-{
-	return QString::fromLatin1(_tags);
-}
+	bool shouldRunProcess() override;
+
+	void startGroup(const char* groupIdentifier) override;
+	void endGroup() override;
+
+	bool isActive(const char* identifier) override;
+	void setActive(const char* identifier, bool active) override;
+
+private:
+	ActiveFromOriginImpl() = default;
+
+	QSettings _settings;
+};
+
+#endif // ACTIVEFROMORIGINIMPL_H

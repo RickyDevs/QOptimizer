@@ -1,5 +1,5 @@
 
-INCLUDEPATH += $$PWD $$PWD/optimize
+INCLUDEPATH += $$PWD $$PWD/optimize $$PWD/singletons
 
 include(../3rdparty/qtservice/src/qtservice.pri)
 
@@ -22,7 +22,8 @@ SOURCES += \
     $$PWD/registry.cpp \
     $$PWD/qtglobalmutex.cpp \
     $$PWD/errorlogger.cpp \
-    $$PWD/jsonconvert.cpp
+    $$PWD/jsonconvert.cpp \
+    $$PWD/singletons/singleton.cpp
 
 HEADERS += \
     $$PWD/cleanhelper.h \
@@ -43,7 +44,9 @@ HEADERS += \
     $$PWD/qtglobalmutex.h \
     $$PWD/errorlogger.h \
     $$PWD/jsonconvert.h \
-    $$PWD/tagshelper.h
+    $$PWD/tagshelper.h \
+    $$PWD/singletons/iactivefromorigin.h \
+    $$PWD/singletons/singleton.h
 
 contains( qo_shared, wbem ) {
     # qo_shared contains 'wbem'

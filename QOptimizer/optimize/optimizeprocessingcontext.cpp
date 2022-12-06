@@ -62,7 +62,6 @@ void OptimizeProcessingContext::ensureProcessed(const QString& identifier)
 		return;
 	}
 
-	// TODO
 	_processedItemsList.append(identifier);
 	_processItemImpl(identifier);
 }
@@ -79,7 +78,7 @@ OptimizeProcessingContext* OptimizeProcessingContext::createActiveFromOriginProc
 		}
 		auto item = manager->items().at(i);
 
-		return OptimizeManager::allIdentifiersOfItem(item); //QStringList();
+		return OptimizeManager::allIdentifiersOfItem(item);
 	};
 
 	context->_processItemImpl = [manager](const QString& identifier) {

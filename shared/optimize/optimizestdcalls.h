@@ -36,8 +36,6 @@ public:
 	QString description() override;
 	QString tags() const override;
 
-	void checkOriginalStateImpl() override;
-
 	const char* _name;
 	const char* _description;
 	const char* _tags;

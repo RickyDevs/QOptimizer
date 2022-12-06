@@ -51,7 +51,6 @@ public:
 	void activate() override;
 	void deactivate() override;
 	bool isActive() override;
-	bool isActiveFromOrigin() override;
 
 private:
 	std::vector<RegistryStrategy> _registryList;

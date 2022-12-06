@@ -20,14 +20,16 @@ HEADERS += \
     mainmodel.h \
     optimize/qoptimizeproxyitem.h \
     optimize/qoptimizeproxymanager.h \
-    optimize/optimizeprocessingcontext.h
+    optimize/optimizeprocessingcontext.h \
+    activefromoriginimpl.h
 
 SOURCES += main.cpp \
     program.cpp \
     mainmodel.cpp \
     optimize/qoptimizeproxyitem.cpp \
     optimize/qoptimizeproxymanager.cpp \
-    optimize/optimizeprocessingcontext.cpp
+    optimize/optimizeprocessingcontext.cpp \
+    activefromoriginimpl.cpp
 
 RESOURCES += qml.qrc
 
