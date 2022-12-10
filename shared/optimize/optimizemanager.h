@@ -22,20 +22,27 @@
 #define OPTIMIZEMANAGER_H
 
 #include "optimizebaseitem.h"
+#include "singleton.h"
+#include <vector>
 
-class OptimizeManager
+class OptimizeManager : public Singleton<OptimizeManager>
 {
 public:
-	OptimizeManager();
-	~OptimizeManager() {}
+	//~OptimizeManager() {}
 
 	std::vector<std::shared_ptr<OptimizeBaseItem>> items();
 
 	std::shared_ptr<OptimizeBaseItem> itemByIdentifier(const QString& identifier);
 
+	QString groupByIdentifier(const QString& identifier);
+
 	static QStringList allIdentifiersOfItem(const std::shared_ptr<OptimizeBaseItem>& itemPtr);
 
+	static void registerImplementation();
+
 private:
+	OptimizeManager();
+
 	void ensureLoaded();
 
 	std::vector<std::shared_ptr<OptimizeBaseItem>> _items;

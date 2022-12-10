@@ -22,6 +22,7 @@
 #include "groupperformancetweaks.h"
 #include "groupnetworkservices.h"
 #include "groupwindowscustom.h"
+#include "optimizemanager.h"
 
 #include <QStringList>
 
@@ -43,6 +44,21 @@ void OptimizeManager::ensureLoaded()
 		_items.push_back(std::make_shared<GroupNetworkServices>());
 		_items.push_back(std::make_shared<GroupWindowsCustom>());
 	}
+}
+
+QString OptimizeManager::groupByIdentifier(const QString& identifier)
+{
+	for (auto it1 = _items.begin(); it1 != _items.end();) {
+		auto subItems = (*it1)->items();
+		for (auto it2 = subItems.begin(); it2 != subItems.end();) {
+			if ((*it2)->identifier() == identifier) {
+				return (*it1)->identifier();
+			}
+			it2++;
+		}
+		it1++;
+	}
+	return QString();
 }
 
 QStringList OptimizeManager::allIdentifiersOfItem(const std::shared_ptr<OptimizeBaseItem>& itemPtr)
@@ -74,3 +90,11 @@ std::shared_ptr<OptimizeBaseItem> OptimizeManager::itemByIdentifier(const QStrin
 
 	return std::shared_ptr<OptimizeBaseItem>();
 }
+
+void OptimizeManager::registerImplementation()
+{
+	Singleton::registerImplementation([](){
+		return new OptimizeManager();
+	});
+}
+

@@ -22,6 +22,7 @@
 #include <QThread>
 
 #include "iactivefromorigin.h"
+#include "optimizemanager.h"
 
 OptimizeBaseItem::OptimizeBaseItem(const char* identifier)
 {
@@ -54,6 +55,14 @@ bool OptimizeBaseItem::isActive()
 
 bool OptimizeBaseItem::isActiveFromOrigin()
 {
+	QString currentGroup = IActiveFromOrigin::instance().group();
+	QString itemGroup = OptimizeManager::instance().groupByIdentifier(_identifier);
+
+	if (itemGroup != currentGroup) {
+		IActiveFromOrigin::instance().endGroup();
+		IActiveFromOrigin::instance().startGroup(qPrintable(itemGroup));
+	}
+
 	return IActiveFromOrigin::instance().isActive(_identifier);
 }
 
@@ -81,8 +90,16 @@ QString OptimizeBaseItem::profiles() const
 void OptimizeBaseItem::checkOriginalStateImpl()
 {
 	bool active = isActive();
+	QString itemGroup = OptimizeManager::instance().groupByIdentifier(_identifier);
+	QString currentGroup = IActiveFromOrigin::instance().group();
+
+	if (itemGroup != currentGroup) {
+		IActiveFromOrigin::instance().endGroup();
+		IActiveFromOrigin::instance().startGroup(qPrintable(itemGroup));
+	}
+
 	IActiveFromOrigin::instance().setActive(_identifier, active);
-	qDebug("checkOriginalStateImpl %s %d", _identifier, active);
+	qDebug("checkOriginalStateImpl %s : %s %d", qPrintable(itemGroup), _identifier, active);
 }
 
 std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeBaseItem::items()

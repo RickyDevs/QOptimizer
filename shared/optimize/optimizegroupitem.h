@@ -26,9 +26,12 @@
 class OptimizeGroupItem : public OptimizeBaseItem
 {
 public:
-	OptimizeGroupItem();
+	OptimizeGroupItem(const char* identifier);
 
 	virtual std::vector<std::shared_ptr<OptimizeBaseItem>> items() override;
+
+	virtual bool isActiveFromOrigin() override;
+	virtual void checkOriginalStateImpl() override;
 
 protected:
 	virtual void loadItems() = 0;

@@ -21,6 +21,7 @@
 #include "qoptimizeproxymanager.h"
 #include "optimizegroupitem.h"
 #include "iactivefromorigin.h"
+#include "optimizemanager.h"
 
 #include <QTimerEvent>
 
@@ -48,10 +49,9 @@ bool match(OptimizeBaseItem& item, const QVariantMap& queryMap)
 QOptimizeProxyManager::QOptimizeProxyManager(QObject *parent)
 	: QObject(parent)
 {
-	_optimizeManager.reset(new OptimizeManager());
 	bool shouldRunProcessingContext = IActiveFromOrigin::instance().shouldRunProcess();
 	if (shouldRunProcessingContext) {
-		_context.reset(OptimizeProcessingContext::createActiveFromOriginProcessor(_optimizeManager.get()));
+		_context.reset(OptimizeProcessingContext::createActiveFromOriginProcessor());
 		_processingTimer.start(100, this);
 	}
 }
@@ -63,7 +63,7 @@ QOptimizeProxyManager::~QOptimizeProxyManager()
 QList<QObject*> QOptimizeProxyManager::query(const QVariantMap& queryMap)
 {
 	QList<QObject*> list;
-	auto result = _optimizeManager->items();
+	auto result = OptimizeManager::instance().items();
 	for (std::shared_ptr<OptimizeBaseItem>& item : result) {
 		if (!match(*item, queryMap)) {
 			continue;

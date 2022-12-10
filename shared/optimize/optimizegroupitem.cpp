@@ -20,8 +20,8 @@
 
 #include "optimizegroupitem.h"
 
-OptimizeGroupItem::OptimizeGroupItem()
-	: OptimizeBaseItem("GroupItem")
+OptimizeGroupItem::OptimizeGroupItem(const char* identifier)
+	: OptimizeBaseItem(identifier)
 {
 }
 
@@ -32,3 +32,14 @@ std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeGroupItem::items()
 	}
 	return _items;
 }
+
+bool OptimizeGroupItem::isActiveFromOrigin()
+{
+	return false;
+}
+
+void OptimizeGroupItem::checkOriginalStateImpl()
+{
+	// no action
+}
+

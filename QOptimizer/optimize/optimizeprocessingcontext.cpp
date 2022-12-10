@@ -66,23 +66,23 @@ void OptimizeProcessingContext::ensureProcessed(const QString& identifier)
 	_processItemImpl(identifier);
 }
 
-
-OptimizeProcessingContext* OptimizeProcessingContext::createActiveFromOriginProcessor(OptimizeManager* manager)
+OptimizeProcessingContext* OptimizeProcessingContext::createActiveFromOriginProcessor()
 {
 	auto context = new OptimizeProcessingContext();
 
-	context->_itemsToProcessImpl = [context, manager](int i) {
-		context->_ended = manager->items().size() <= i;
+	context->_itemsToProcessImpl = [context](int i) {
+		auto items = OptimizeManager::instance().items();
+		context->_ended = items.size() <= i;
 		if (context->_ended) {
 			return QStringList();
 		}
-		auto item = manager->items().at(i);
+		auto item = items.at(i);
 
 		return OptimizeManager::allIdentifiersOfItem(item);
 	};
 
-	context->_processItemImpl = [manager](const QString& identifier) {
-		auto item = manager->itemByIdentifier(identifier);
+	context->_processItemImpl = [](const QString& identifier) {
+		auto item = OptimizeManager::instance().itemByIdentifier(identifier);
 
 		if (item) {
 			item->checkOriginalStateImpl();

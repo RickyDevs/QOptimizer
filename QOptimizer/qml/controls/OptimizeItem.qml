@@ -134,5 +134,9 @@ Item {
         description.text = model.description;
         toggleButton._activationNeedsConnect = true;
         toggleButton.state = model.isActive() ? "on" : "off";
+
+        console.log(model.name, model.isActiveFromOrigin());
+
+        toggleButton.lockedMode = model.isActiveFromOrigin();
     }
 }

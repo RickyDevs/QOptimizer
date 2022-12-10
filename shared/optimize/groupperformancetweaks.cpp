@@ -24,8 +24,8 @@
 #include "tagshelper.h"
 
 GroupPerformanceTweaks::GroupPerformanceTweaks()
+	: OptimizeGroupItem("PerformanceTweaks")
 {
-
 }
 
 QString GroupPerformanceTweaks::name()

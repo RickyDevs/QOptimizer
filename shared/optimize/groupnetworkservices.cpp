@@ -23,6 +23,7 @@
 #include "tagshelper.h"
 
 GroupNetworkServices::GroupNetworkServices()
+	: OptimizeGroupItem("NetworkServices")
 {
 }
 

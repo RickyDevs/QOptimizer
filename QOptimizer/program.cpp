@@ -21,7 +21,6 @@
 #include "program.h"
 
 #include "mainmodel.h"
-#include "qoptimizeproxymanager.h"
 
 bool Program::UNSAFE_MODE = false;
 

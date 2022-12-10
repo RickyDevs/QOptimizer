@@ -8,6 +8,7 @@ Item {
     height: 32
     property string backgroundColorOn: ''
     property bool manualSwitchMode: false
+    property bool lockedMode: false
 
     signal activating;
     signal deactivating;
@@ -34,13 +35,13 @@ Item {
         id: background0
         anchors.fill: parent
         anchors.margins: 1
-        border.width: 3
+        border.width: button1.height > 25? 3 : 2.1;
         border.color: myPalette.shadow
         radius: height
         color: 'transparent'
         Item {
             anchors.fill: parent
-            anchors.margins: 7
+            anchors.margins: button1.height > 25? 7 : 6;
 
             Rectangle {
                 id: knob
@@ -56,6 +57,10 @@ Item {
 
     MouseArea {
         function switchState() {
+            if (lockedMode) {
+                return;
+            }
+
             if (button1.manualSwitchMode) {
                 if (button1.state === 'on') {
                     button1.state = 'deactivating';
@@ -78,7 +83,8 @@ Item {
     }
 
     function getColorOn() {
-        return backgroundColorOn? backgroundColorOn : myPalette.highlight;
+        var colorOn = backgroundColorOn? backgroundColorOn : myPalette.highlight;
+        return colorOn;
     }
 
     states: [
@@ -99,7 +105,7 @@ Item {
         },
         State {
             name: "on"
-            PropertyChanges { target: background0; color: getColorOn() ; border.color: getColorOn() }
+            PropertyChanges { target: background0; color: getColorOn() ; border.color: getColorOn(); opacity: lockedMode? 0.7 : 1 }
             PropertyChanges { target: knob; color: myPalette.base; x: parent.width - width }
         }
     ]

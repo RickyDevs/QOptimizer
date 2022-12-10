@@ -26,8 +26,6 @@
 
 #include <functional>
 
-class OptimizeManager;
-
 class OptimizeProcessingContext
 {
 public:
@@ -36,7 +34,7 @@ public:
 
 	void ensureProcessed(const QString& identifier);
 
-	static OptimizeProcessingContext* createActiveFromOriginProcessor(OptimizeManager* manager);
+	static OptimizeProcessingContext* createActiveFromOriginProcessor();
 
 private:
 	OptimizeProcessingContext();

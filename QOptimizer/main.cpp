@@ -30,6 +30,7 @@
 #include "qcominitializer.h"
 #include "qoptimizeproxymanager.h"
 #include "activefromoriginimpl.h"
+#include "optimizemanager.h"
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
@@ -79,6 +80,7 @@ int main(int argc, char *argv[])
 
 	// Inject singleton implementations
 	IActiveFromOrigin::registerImplementation(ActiveFromOriginImpl::create);
+	OptimizeManager::registerImplementation();
 
 	// Inject C++ class to QML
 	context->setContextProperty(QStringLiteral("optimizeManager"), new QOptimizeProxyManager(&engine));

@@ -24,13 +24,14 @@
 #include "tagshelper.h"
 
 GroupWindowsCustom::GroupWindowsCustom()
+	: OptimizeGroupItem("WindowsCustom")
 {
 
 }
 
 QString GroupWindowsCustom::name()
 {
-	return QString::fromLatin1("GroupWindowsCustom");
+	return QString::fromLatin1("Windows Customization");
 }
 
 QString GroupWindowsCustom::description()

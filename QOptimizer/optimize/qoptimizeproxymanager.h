@@ -25,7 +25,6 @@
 #include <QVariant>
 #include <QBasicTimer>
 #include "qoptimizeproxyitem.h"
-#include "optimizemanager.h"
 #include "optimizeprocessingcontext.h"
 
 class QOptimizeProxyManager : public QObject
@@ -44,7 +43,6 @@ signals:
 //public slots:
 private:
 	void timerEvent(QTimerEvent *event) override;
-	std::unique_ptr<OptimizeManager> _optimizeManager;
 	QBasicTimer _processingTimer;
 	std::unique_ptr<OptimizeProcessingContext> _context;
 };

@@ -32,6 +32,7 @@ public:
 
 	bool shouldRunProcess() override;
 
+	QString group() override;
 	void startGroup(const char* groupIdentifier) override;
 	void endGroup() override;
 
@@ -39,7 +40,7 @@ public:
 	void setActive(const char* identifier, bool active) override;
 
 private:
-	ActiveFromOriginImpl() = default;
+	ActiveFromOriginImpl();
 
 	QSettings _settings;
 };

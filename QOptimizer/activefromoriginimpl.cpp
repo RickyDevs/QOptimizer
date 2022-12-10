@@ -19,10 +19,17 @@
 ****************************************************************************/
 
 #include "activefromoriginimpl.h"
+#include <QCoreApplication>
 
 ActiveFromOriginImpl* ActiveFromOriginImpl::create()
 {
 	return new ActiveFromOriginImpl();
+}
+
+ActiveFromOriginImpl::ActiveFromOriginImpl()
+	: _settings(QSettings::SystemScope, QCoreApplication::organizationName(), QCoreApplication::applicationName())
+{
+
 }
 
 bool ActiveFromOriginImpl::shouldRunProcess()
@@ -33,11 +40,14 @@ bool ActiveFromOriginImpl::shouldRunProcess()
 	return true;
 }
 
+QString ActiveFromOriginImpl::group()
+{
+	return _settings.group();
+}
+
 void ActiveFromOriginImpl::startGroup(const char* groupIdentifier)
 {
 	Q_ASSERT_X(!QString(groupIdentifier).contains('/'), qPrintable(QString("ActiveFromOriginImpl::startGroup '%1'").arg(groupIdentifier)), "groupIdentifier's can't have '/'");
-
-	//  TODO integrar no context???
 	_settings.beginGroup(groupIdentifier);
 }
 
