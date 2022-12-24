@@ -55,5 +55,8 @@ void GroupWindowsCustom::loadItems()
 
 		});
 
+	// TODO disable service: stisvc - Aquisição de Imagem do Windows (WIA) - juntar ao PrintService
+						  //  If you don’t use a camera or scanner with your computer, you can Disable this service – but the better option would be to set it to Manual.
+
 	_items.push_back(item);
 }

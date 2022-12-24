@@ -20,6 +20,30 @@
 
 #include "qoptimizeproxyitem.h"
 
+void GroupProxyHandler::activate(QList<QObject*>& list)
+{
+	for (QObject* item : list) {
+		QOptimizeProxyItem* proxyItem = static_cast<QOptimizeProxyItem*>(item);
+		if (!proxyItem->isActive()) {
+			proxyItem->activate();
+			active++;
+		}
+	}
+}
+
+void GroupProxyHandler::deactivate(QList<QObject*>& list)
+{
+	for (QObject* item : list) {
+		QOptimizeProxyItem* proxyItem = static_cast<QOptimizeProxyItem*>(item);
+		if (proxyItem->isActive() && !proxyItem->isActiveFromOrigin()) {
+			proxyItem->deactivate();
+			active--;
+		}
+	}
+}
+
+// QOptimizeProxyItem
+
 QOptimizeProxyItem::QOptimizeProxyItem(std::shared_ptr<OptimizeBaseItem> item, QObject* parent)
 	: QObject(parent), _item(item)
 {
@@ -28,6 +52,11 @@ QOptimizeProxyItem::QOptimizeProxyItem(std::shared_ptr<OptimizeBaseItem> item, Q
 
 void QOptimizeProxyItem::activate()
 {
+	if (_groupHandler) {
+		_groupHandler->activate(_proxyItems);
+		emit activeChanged();
+		return;
+	}
 	if (_item) {
 		_item->activate();
 		emit activeChanged();
@@ -36,6 +65,11 @@ void QOptimizeProxyItem::activate()
 
 void QOptimizeProxyItem::deactivate()
 {
+	if (_groupHandler) {
+		_groupHandler->deactivate(_proxyItems);
+		emit activeChanged();
+		return;
+	}
 	if (_item) {
 		_item->deactivate();
 		emit activeChanged();
@@ -44,6 +78,9 @@ void QOptimizeProxyItem::deactivate()
 
 bool QOptimizeProxyItem::isActive()
 {
+	if (_groupHandler) {
+		return _groupHandler->isActive();
+	}
 	if (_item) {
 		return _item->isActive();
 	}
@@ -52,6 +89,9 @@ bool QOptimizeProxyItem::isActive()
 
 bool QOptimizeProxyItem::isActiveFromOrigin()
 {
+	if (_groupHandler) {
+		return _groupHandler->isActiveFromOrigin();
+	}
 	if (_item) {
 		return _item->isActiveFromOrigin();
 	}
@@ -101,6 +141,16 @@ QString QOptimizeProxyItem::profiles()
 void QOptimizeProxyItem::addProxyItem(QOptimizeProxyItem *item)
 {
 	_proxyItems.append(item);
+
+	if (!_groupHandler) {
+		_groupHandler.reset(new GroupProxyHandler());
+	}
+	_groupHandler->total++;
+	if (item->isActiveFromOrigin()) {
+		_groupHandler->activeFromOrigin++;
+	} else if (item->isActive()) {
+		_groupHandler->active++;
+	}
 }
 
 QList<QObject*> QOptimizeProxyItem::childItems()

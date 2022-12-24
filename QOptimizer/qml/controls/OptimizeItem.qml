@@ -99,6 +99,9 @@ Item {
                 console.log('onActivationChanged response');
                 autoCancelAction.stop();
                 finishSwitch()
+
+                // TODO update childs
+                console.log('model.childItems', model.childItems)
             }
 
             Timer {

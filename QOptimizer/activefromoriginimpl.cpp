@@ -20,6 +20,9 @@
 
 #include "activefromoriginimpl.h"
 #include <QCoreApplication>
+#include "program.h"
+
+constexpr auto k_lastVersion = "ActiveFromOriginVersion";
 
 ActiveFromOriginImpl* ActiveFromOriginImpl::create()
 {
@@ -34,10 +37,23 @@ ActiveFromOriginImpl::ActiveFromOriginImpl()
 
 bool ActiveFromOriginImpl::shouldRunProcess()
 {
-	// compare versions
-	// TODO
+	if (!_settings.group().isEmpty()) {
+		_settings.endGroup();
+	}
+	QString lastVersion = _settings.value(k_lastVersion).toString();
 
-	return true;
+	Program program;
+
+	return lastVersion != program.version();
+}
+
+void ActiveFromOriginImpl::processEnded(){
+	if (!_settings.group().isEmpty()) {
+		_settings.endGroup();
+	}
+
+	Program program;
+	_settings.setValue(k_lastVersion, program.version());
 }
 
 QString ActiveFromOriginImpl::group()
@@ -54,6 +70,12 @@ void ActiveFromOriginImpl::startGroup(const char* groupIdentifier)
 void ActiveFromOriginImpl::endGroup()
 {
 	_settings.endGroup();
+}
+
+bool ActiveFromOriginImpl::exists(const char* identifier)
+{
+	Q_ASSERT_X(!QString(identifier).contains('/'), qPrintable(QString("ActiveFromOriginImpl::exists '%1'").arg(identifier)), "identifier's can't have '/'");
+	return _settings.value(identifier).isValid();
 }
 
 bool ActiveFromOriginImpl::isActive(const char* identifier)

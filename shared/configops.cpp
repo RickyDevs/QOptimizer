@@ -10,8 +10,6 @@
 #include "errorlogger.h"
 #include "utilities.h"
 
-
-
 Config* ConfigOps::parseConfigFile(const QString& file, QObject* parent)
 {
 	//printf("cur dir %s\n", QDir::currentPath().toStdString().c_str());

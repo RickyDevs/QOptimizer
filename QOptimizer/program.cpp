@@ -22,12 +22,17 @@
 
 #include "mainmodel.h"
 
+#define QUOTE(x) #x
+#define TO_VERSION(x) QUOTE(x)
+
+
 bool Program::UNSAFE_MODE = false;
 
 Program::Program(QObject *parent)
 	: QObject(parent)
 {
 	_wbemServices = new QWbemServices(this);
+
 }
 
 //Program::initServices()
@@ -51,10 +56,10 @@ QVariant Program::createModel(const QString& modelName) {
 
 QString Program::version()
 {
-	return "TODO";
+	return QString::fromUtf8(TO_VERSION(QO_VERSION));
 }
 
 QString Program::buildDate()
 {
-	return "TODO: build date";
+	return QString::fromUtf8(__DATE__);
 }

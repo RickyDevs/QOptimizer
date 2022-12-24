@@ -37,15 +37,15 @@ QString OptimizeBaseItem::identifier()
 
 void OptimizeBaseItem::activate()
 {
-	printf("OptimizeBaseItem::Activate\n");
-	QThread::msleep(100);
+	qWarning("OptimizeBaseItem::Activate? %s", _identifier);
+	QThread::msleep(600);
 
 }
 
 void OptimizeBaseItem::deactivate()
 {
-	printf("OptimizeBaseItem::deactivate\n");
-	QThread::msleep(50);
+	qWarning("OptimizeBaseItem::deactivate? %s", _identifier);
+	QThread::msleep(250);
 }
 
 bool OptimizeBaseItem::isActive()
@@ -89,7 +89,6 @@ QString OptimizeBaseItem::profiles() const
 
 void OptimizeBaseItem::checkOriginalStateImpl()
 {
-	bool active = isActive();
 	QString itemGroup = OptimizeManager::instance().groupByIdentifier(_identifier);
 	QString currentGroup = IActiveFromOrigin::instance().group();
 
@@ -98,6 +97,11 @@ void OptimizeBaseItem::checkOriginalStateImpl()
 		IActiveFromOrigin::instance().startGroup(qPrintable(itemGroup));
 	}
 
+	if (IActiveFromOrigin::instance().exists(_identifier)) {
+		return;
+	}
+
+	bool active = isActive();
 	IActiveFromOrigin::instance().setActive(_identifier, active);
 	qDebug("checkOriginalStateImpl %s : %s %d", qPrintable(itemGroup), _identifier, active);
 }

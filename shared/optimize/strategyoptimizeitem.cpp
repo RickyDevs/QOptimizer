@@ -58,6 +58,8 @@ void StrategyOptimizeItem::setStrategyList(const std::vector<RegistryStrategy> l
 
 void StrategyOptimizeItem::activate()
 {
+	Q_ASSERT_X(!isActiveFromOrigin(), "StrategyOptimizeItem::activate", "Dont activate an ActiveFromOrigin");
+
 	for (auto& reg : _registryList) {
 		reg.currentValue().setTo(reg.activeValue());
 	}
@@ -65,8 +67,8 @@ void StrategyOptimizeItem::activate()
 
 void StrategyOptimizeItem::deactivate()
 {
-	// TODO reverse it
-	for (auto& reg : _registryList) {
+	for (auto regIt = _registryList.rbegin(); regIt != _registryList.rend(); regIt++) {
+		auto reg = *regIt;
 		reg.currentValue().setTo(reg.deactiveValue());
 	}
 }

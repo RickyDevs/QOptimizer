@@ -31,11 +31,13 @@ public:
 	static ActiveFromOriginImpl* create();
 
 	bool shouldRunProcess() override;
+	void processEnded() override;
 
 	QString group() override;
 	void startGroup(const char* groupIdentifier) override;
 	void endGroup() override;
 
+	bool exists(const char* identifier) override;
 	bool isActive(const char* identifier) override;
 	void setActive(const char* identifier, bool active) override;
 

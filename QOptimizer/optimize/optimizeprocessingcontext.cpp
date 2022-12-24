@@ -21,6 +21,7 @@
 #include "optimizeprocessingcontext.h"
 
 #include "optimizemanager.h"
+#include "iactivefromorigin.h"
 
 OptimizeProcessingContext::OptimizeProcessingContext()
 {
@@ -44,6 +45,10 @@ bool OptimizeProcessingContext::hasEnded()
 void OptimizeProcessingContext::processNext()
 {
 	QStringList itemIds = _itemsToProcessImpl(_index);
+
+	if (_ended) {
+		//  TODO ??
+	}
 
 	for (QString identifier : itemIds) {
 		if (_processedItemsList.contains(identifier)) {
@@ -74,6 +79,7 @@ OptimizeProcessingContext* OptimizeProcessingContext::createActiveFromOriginProc
 		auto items = OptimizeManager::instance().items();
 		context->_ended = items.size() <= i;
 		if (context->_ended) {
+			IActiveFromOrigin::instance().processEnded();
 			return QStringList();
 		}
 		auto item = items.at(i);

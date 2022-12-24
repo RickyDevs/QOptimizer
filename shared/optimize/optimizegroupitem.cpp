@@ -33,6 +33,16 @@ std::vector<std::shared_ptr<OptimizeBaseItem>> OptimizeGroupItem::items()
 	return _items;
 }
 
+void OptimizeGroupItem::activate()
+{
+	Q_ASSERT(false); // no action
+}
+
+void OptimizeGroupItem::deactivate()
+{
+	Q_ASSERT(false); // no action
+}
+
 bool OptimizeGroupItem::isActiveFromOrigin()
 {
 	return false;
@@ -40,6 +50,6 @@ bool OptimizeGroupItem::isActiveFromOrigin()
 
 void OptimizeGroupItem::checkOriginalStateImpl()
 {
-	// no action
+	Q_ASSERT(false); // no action
 }
 

@@ -30,6 +30,9 @@ public:
 
 	virtual std::vector<std::shared_ptr<OptimizeBaseItem>> items() override;
 
+	virtual void activate() override;
+	virtual void deactivate() override;
+
 	virtual bool isActiveFromOrigin() override;
 	virtual void checkOriginalStateImpl() override;
 

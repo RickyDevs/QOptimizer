@@ -44,7 +44,7 @@ struct RegistryActionValue {
 	RegistryActionValueType type; // String / DWord / delete
 	std::string subPath;
 	std::string name;
-	qint32 number;  // --> QVariant..
+	qint32 number;  // --> TODO QVariant..
 	std::string string;
 
 	RegistryActionValue(const std::string& subPath = "")

@@ -25,6 +25,25 @@
 #include <QObject>
 #include "optimizebaseitem.h"
 
+struct GroupProxyHandler {
+	bool needsProcessing;
+	int total;
+	int activeFromOrigin;
+	int active;
+
+	GroupProxyHandler() :
+		needsProcessing(true), total(0), active(0), activeFromOrigin(0) {
+	}
+	bool isActive() {
+		return total == (active + activeFromOrigin);
+	}
+	bool isActiveFromOrigin() {
+		return total == activeFromOrigin;
+	}
+	void activate(QList<QObject*>& list);
+	void deactivate(QList<QObject*>& list);
+};
+
 class QOptimizeProxyItem : public QObject
 {
 	Q_OBJECT
@@ -60,6 +79,7 @@ private:
 	std::shared_ptr<OptimizeBaseItem> _item;
 
 	QList<QObject*> _proxyItems;
+	std::unique_ptr<GroupProxyHandler> _groupHandler;
 };
 
 #endif // OPTIMIZEPROXYITEM_H
