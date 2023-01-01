@@ -9,6 +9,9 @@ Item {
 
     property var model;
     property int indent: 0
+    property int parentIndex: -1;
+
+    signal updateChildsOrParent()
 
     SystemPalette {
         id: myPalette
@@ -96,12 +99,12 @@ Item {
             }
 
             function onActiveChanged() {
-                console.log('onActivationChanged response');
                 autoCancelAction.stop();
                 finishSwitch()
 
-                // TODO update childs
-                console.log('model.childItems', model.childItems)
+                console.debug('model.childItems', model.childItems, index,  model.identifier)
+                root.updateChildsOrParent();
+
             }
 
             Timer {
@@ -141,5 +144,9 @@ Item {
         console.log(model.name, model.isActiveFromOrigin());
 
         toggleButton.lockedMode = model.isActiveFromOrigin();
+    }
+
+    function recheckState() {
+        toggleButton.state = model.isActive() ? "on" : "off";
     }
 }

@@ -95,6 +95,22 @@ Item {
                     delegate: Component {
                         OptimizeItem {
 
+                            onUpdateChildsOrParent: {
+                                console.log("onUpdateChildsOrParent index", index, model.identifier, ' childs sise', model.childItems.length)
+
+                                var len = model.childItems.length;
+                                if (len > 0) {
+                                    var lastIndex =  index + len;
+                                    for(var idx = index + 1; idx <= lastIndex; idx++) {
+                                        console.log('recheckState', idx)
+                                        optimizeItemList.itemAt(idx).recheckState();
+                                    }
+                                } else {
+                                    if (parentIndex >= 0) {
+                                        optimizeItemList.itemAt(parentIndex).recheckState();
+                                    }
+                                }
+                            }
                         }
                     }
                 }

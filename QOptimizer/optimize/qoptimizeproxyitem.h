@@ -26,13 +26,13 @@
 #include "optimizebaseitem.h"
 
 struct GroupProxyHandler {
-	bool needsProcessing;
 	int total;
 	int activeFromOrigin;
 	int active;
+	bool groupNeedsUpdate;
 
 	GroupProxyHandler() :
-		needsProcessing(true), total(0), active(0), activeFromOrigin(0) {
+		total(0), active(0), activeFromOrigin(0), groupNeedsUpdate(false) {
 	}
 	bool isActive() {
 		return total == (active + activeFromOrigin);
@@ -40,6 +40,7 @@ struct GroupProxyHandler {
 	bool isActiveFromOrigin() {
 		return total == activeFromOrigin;
 	}
+	void recheckActive(QList<QObject*>& list);
 	void activate(QList<QObject*>& list);
 	void deactivate(QList<QObject*>& list);
 };
@@ -62,7 +63,6 @@ public:
 	Q_INVOKABLE void activate();
 	Q_INVOKABLE void deactivate();
 
-
 	void addProxyItem(QOptimizeProxyItem* item);
 
 signals:
@@ -80,6 +80,8 @@ private:
 
 	QList<QObject*> _proxyItems;
 	std::unique_ptr<GroupProxyHandler> _groupHandler;
+	bool* _groupUpdateFlag;
+
 };
 
 #endif // OPTIMIZEPROXYITEM_H

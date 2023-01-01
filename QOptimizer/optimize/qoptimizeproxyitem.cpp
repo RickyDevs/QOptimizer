@@ -20,6 +20,19 @@
 
 #include "qoptimizeproxyitem.h"
 
+
+void GroupProxyHandler::recheckActive(QList<QObject*>& list)
+{
+	groupNeedsUpdate = false;
+	active = 0;
+	for (QObject* item : list) {
+		QOptimizeProxyItem* proxyItem = static_cast<QOptimizeProxyItem*>(item);
+		if (proxyItem->isActive()) {
+			active++;
+		}
+	}
+}
+
 void GroupProxyHandler::activate(QList<QObject*>& list)
 {
 	for (QObject* item : list) {
@@ -45,7 +58,7 @@ void GroupProxyHandler::deactivate(QList<QObject*>& list)
 // QOptimizeProxyItem
 
 QOptimizeProxyItem::QOptimizeProxyItem(std::shared_ptr<OptimizeBaseItem> item, QObject* parent)
-	: QObject(parent), _item(item)
+	: QObject(parent), _item(item), _groupUpdateFlag(nullptr)
 {
 
 }
@@ -59,6 +72,9 @@ void QOptimizeProxyItem::activate()
 	}
 	if (_item) {
 		_item->activate();
+		if (_groupUpdateFlag) {
+			*_groupUpdateFlag = true;
+		}
 		emit activeChanged();
 	}
 }
@@ -72,6 +88,9 @@ void QOptimizeProxyItem::deactivate()
 	}
 	if (_item) {
 		_item->deactivate();
+		if (_groupUpdateFlag) {
+			*_groupUpdateFlag = true;
+		}
 		emit activeChanged();
 	}
 }
@@ -79,6 +98,9 @@ void QOptimizeProxyItem::deactivate()
 bool QOptimizeProxyItem::isActive()
 {
 	if (_groupHandler) {
+		if (_groupHandler->groupNeedsUpdate) {
+			_groupHandler->recheckActive(_proxyItems);
+		}
 		return _groupHandler->isActive();
 	}
 	if (_item) {
@@ -151,6 +173,7 @@ void QOptimizeProxyItem::addProxyItem(QOptimizeProxyItem *item)
 	} else if (item->isActive()) {
 		_groupHandler->active++;
 	}
+	item->_groupUpdateFlag = &(_groupHandler->groupNeedsUpdate);
 }
 
 QList<QObject*> QOptimizeProxyItem::childItems()

@@ -141,7 +141,7 @@ void set(const QString &uKey, const QVariant &value)
 	RegCloseKey(handle);
 }
 
-bool QWinSettingsPrivate::get(const QString &uKey, QVariant *value) const
+bool get(const QString &uKey, QVariant *value)
 {
 	QString rKey = escapedKey(uKey);
 

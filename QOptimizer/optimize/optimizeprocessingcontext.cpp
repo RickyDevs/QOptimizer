@@ -46,17 +46,12 @@ void OptimizeProcessingContext::processNext()
 {
 	QStringList itemIds = _itemsToProcessImpl(_index);
 
-	if (_ended) {
-		//  TODO ??
+	if (hasEnded()) {
+		return;
 	}
 
 	for (QString identifier : itemIds) {
-		if (_processedItemsList.contains(identifier)) {
-			continue;
-		}
-
-		_processedItemsList.append(identifier);
-		_processItemImpl(identifier);
+		ensureProcessed(identifier);
 	}
 	_index++;
 }

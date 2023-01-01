@@ -31,16 +31,20 @@ function fillOptimizeItemList(wbemObj, optimizeItemList) {
     //console.log("list.lenght", modelList.length);
     optimizeItemList.model = countModelListItems(modelList);
     var idx = 0;
+    var parentIdx = -1;
     for (var x in modelList) {
         //console.log(optimizeItemList.itemAt(idx));
         var modelItem = modelList[x];
         optimizeItemList.itemAt(idx).model = modelItem;
+        parentIdx = idx;
         idx++;
         if (modelItem.childItems.length > 0) {
             for (var y in modelItem.childItems) {
                 var modelSubItem = modelItem.childItems[y];
-                optimizeItemList.itemAt(idx).model = modelSubItem;
-                optimizeItemList.itemAt(idx).indent = 1;
+                var repeaterItem = optimizeItemList.itemAt(idx);
+                repeaterItem.model = modelSubItem;
+                repeaterItem.indent = 1;
+                repeaterItem.parentIndex = parentIdx;
                 idx++;
             }
         }

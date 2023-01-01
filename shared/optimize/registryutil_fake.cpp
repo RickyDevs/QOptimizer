@@ -28,9 +28,10 @@ namespace registry_util
 
 static QSettings settings("FakeRegistry.ini", QSettings::IniFormat);
 
-QVariant get(const QString &uKey)
+bool get(const QString &uKey, QVariant *value)
 {
-	return settings.value(uKey);
+	*value = settings.value(uKey);
+	return value->isValid();
 }
 
 

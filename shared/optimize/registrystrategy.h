@@ -22,8 +22,7 @@
 #define REGISTRYSTRATEGY_H
 
 #include <string>
-#include <QString>
-
+#include <QVariant>
 
 struct RegistryKey
 {
@@ -41,18 +40,17 @@ enum RegistryActionValueType {
 
 struct RegistryActionValue {
 
+	QVariant value;
 	RegistryActionValueType type; // String / DWord / delete
 	std::string subPath;
 	std::string name;
-	qint32 number;  // --> TODO QVariant..
-	std::string string;
 
 	RegistryActionValue(const std::string& subPath = "")
-		: type(Null), subPath(subPath) {}
+		: type(Null), value(QVariant::Invalid), subPath(subPath) {}
 	RegistryActionValue(const std::string& name, qint32 n, const std::string& subPath = "")
-		: type(Number), name(name), number(n), subPath(subPath) {}
+		: type(Number), name(name), value(n), subPath(subPath) {}
 	RegistryActionValue(const std::string& name, const std::string& str, const std::string& subPath = "")
-		: type(String), name(name), string(str), subPath(subPath) {}
+		: type(String), name(name), value(str.c_str()), subPath(subPath) {}
 };
 
 class RegistryStrategy;

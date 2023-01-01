@@ -28,36 +28,36 @@ RegistryAction::RegistryAction(RegistryStrategy *parent)
 
 }
 
-bool RegistryAction::equalsTo(const RegistryActionValue& value) const
+bool RegistryAction::equalsTo(const RegistryActionValue& actionValue) const
 {
 	std::string path = _parent->key().path;
-	if (!value.subPath.empty()) {
-		path += "\\" + value.subPath;
+	if (!actionValue.subPath.empty()) {
+		path += "\\" + actionValue.subPath;
 	}
-	QVariant v = registry_util::get(path.c_str());
+	QVariant v;
+	bool success = registry_util::get(path.c_str(), &v);
 
-	switch (value.type) {
+	switch (actionValue.type) {
 	case Number:
 	case String:
-		return (v.toString() == value.string.c_str());
+		return (v.toString() == actionValue.value.toString());
 	case Null:
-// TODO
-		break;
+		return !success;
 	}
-	return false; //TODO
+	return false;
 }
 
-void RegistryAction::setTo(const RegistryActionValue& value)
+void RegistryAction::setTo(const RegistryActionValue& actionValue)
 {
 	std::string path = _parent->key().path;
-	if (!value.subPath.empty()) {
-		path += "\\" + value.subPath;
+	if (!actionValue.subPath.empty()) {
+		path += "\\" + actionValue.subPath;
 	}
 
-	switch (value.type) {
+	switch (actionValue.type) {
 	case Number:
 	case String:
-		registry_util::set(path.c_str(), QVariant(value.string.c_str()));
+		registry_util::set(path.c_str(), actionValue.value);
 
 		break;
 	case Null:

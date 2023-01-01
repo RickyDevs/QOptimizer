@@ -33,7 +33,7 @@ enum RegistryKeyEnum : int {
 namespace registry_util
 {
 
-QVariant get(const QString &uKey);
+bool get(const QString &uKey, QVariant *value);
 
 void set(const QString &uKey, const QVariant &value);
 
